@@ -21,20 +21,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    List<String> images  = new ArrayList<>();
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    //TODO : why isnt there any access specifier for these variables?
+    //TODO: was this initialization necessary here?
+    List<String> images = new ArrayList<>();
+
     RecyclerView recyclerView;
+
     ImageAdapter imageAdapter;
-    ProgressBar progressId;
-    Button nextButton;
-    String nextPageUrl ;
+
+    ProgressBar  progressId;
+
+    Button       nextButton;
+
+    String       nextPageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         initViews();
+
         new ResponseLoader().execute(nextPageUrl);
+
+        //TODO: move this to bindViews() method
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         nextButton.setOnClickListener(this);
@@ -42,20 +54,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initViews() {
         nextPageUrl = "http://api.pexels.com/v1/search?query=people";
-        progressId = (ProgressBar)findViewById(R.id.progressId);
-        nextButton = (Button)findViewById(R.id.next_button);
-        recyclerView = (RecyclerView)findViewById(R.id.recyclerViewId);
+        progressId = (ProgressBar) findViewById(R.id.progressId);
+        nextButton = (Button) findViewById(R.id.next_button);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewId);
     }
 
     @Override
     public void onClick(View v) {
-        images  = new ArrayList<>();
+        images = new ArrayList<>();
         new ResponseLoader().execute(nextPageUrl);
+        //TODO : move this to onPostExecute()
         imageAdapter.notifyDataSetChanged();
     }
 
+    private class ResponseLoader extends AsyncTask<String, Void, JSONObject> {
 
-    private class ResponseLoader extends AsyncTask<String,Void,JSONObject>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -74,33 +87,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             super.onPostExecute(jsonObject);
             toggleProgress(false);
             getImagesOfPage(jsonObject);
-            imageAdapter = new ImageAdapter(images,getApplicationContext());
+            //TODO : unnecessary object creation of Adapter, set adapter in bindViews() method and call notifyDataSetChanged() here
+            imageAdapter = new ImageAdapter(images, getApplicationContext());
             recyclerView.setAdapter(imageAdapter);
 
         }
-        private void toggleProgress(boolean show){
-          progressId.setVisibility(show? View.VISIBLE:View.GONE);
+
+        private void toggleProgress(boolean show) {
+            progressId.setVisibility(show ? View.VISIBLE : View.GONE);
         }
     }
 
-
     public void getImagesOfPage(JSONObject jsonObject) {
         try {
+            //TODO : potential NullPointerException, null check before parsing data
             JSONArray array = jsonObject.getJSONArray("photos");
-             nextPageUrl = (String)jsonObject.getString("next_page");
-            for (int i=0 ;i<array.length();i++){
-                Log.d("JSONOBJECT",jsonObject.toString());
-                JSONObject photo = (JSONObject)array.get(i);
-                Log.d("PHOTO",photo+"");
-                JSONObject src = (JSONObject)photo.get("src");
-                Log.d("SRC",src+"");
-                String imgUrl = src.getString("tiny");
-                imgUrl.replace("\\","");
-                Log.d("ImageUrl",imgUrl);
+            nextPageUrl = jsonObject.getString("next_page");
+            for (int i = 0; i < array.length(); i++) {
+                Log.d("JSONOBJECT", jsonObject.toString());
+                JSONObject photo = (JSONObject) array.get(i);
+                Log.d("PHOTO", photo + "");
+                JSONObject src = (JSONObject) photo.get("src");
+                Log.d("SRC", src + "");
+                String imgUrl = src.getString("medium");
+                imgUrl.replace("\\", "");
+                Log.d("ImageUrl", imgUrl);
                 images.add(imgUrl);
             }
-        }
-        catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
