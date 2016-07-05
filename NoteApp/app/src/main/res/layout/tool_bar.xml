@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@color/colorPrimary"
+    android:elevation="4dp">
+   <ImageButton
+       android:id="@+id/createButton"
+       android:layout_width="45dp"
+       android:layout_height="45dp"
+       android:src="@drawable/plus"
+       android:layout_marginLeft="300dp"
+       />
+
+</android.support.v7.widget.Toolbar>
