@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //TODO : why isnt there any access specifier for these variables?
     //TODO: was this initialization necessary here?
-    List<String> images = new ArrayList<>();
+    List<String> images;
 
     RecyclerView recyclerView;
 
@@ -45,11 +45,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
 
         new ResponseLoader().execute(nextPageUrl);
+        bindViews();
 
         //TODO: move this to bindViews() method
+        nextButton.setOnClickListener(this);
+    }
+
+    private void bindViews() {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
-        nextButton.setOnClickListener(this);
     }
 
     private void initViews() {

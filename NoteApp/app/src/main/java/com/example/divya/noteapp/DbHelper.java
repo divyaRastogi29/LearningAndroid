@@ -13,10 +13,11 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "NoteReminders";
     private static final int DATABASE_VERSION = 1;
     public static final String TABLE_NAME = "reminders";
+    public static final String IMAGE_COLOR = "image";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_REMINDER = "reminder";
-    private static final String query = "create table "+TABLE_NAME+" ("+COLUMN_ID+ " integer primary key " +
+    private static final String query = "create table "+TABLE_NAME+" ("+IMAGE_COLOR+" integer, "+COLUMN_ID+ " integer primary key " +
             "autoincrement, "+COLUMN_TITLE+ ","+COLUMN_REMINDER+" not null);";
 
     public DbHelper(Context context) {

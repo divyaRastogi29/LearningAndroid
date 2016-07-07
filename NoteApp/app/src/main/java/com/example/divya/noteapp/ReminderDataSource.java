@@ -5,19 +5,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by divya on 2/7/16.
  */
-public class ReminderDataSource implements Serializable{
+public class ReminderDataSource{
     private SQLiteDatabase database;
     private DbHelper dbHelper;
-    private String[] allColumns = {DbHelper.COLUMN_ID,DbHelper.COLUMN_TITLE,DbHelper.COLUMN_REMINDER};
+    private String[] allColumns = {DbHelper.IMAGE_COLOR, DbHelper.COLUMN_ID,DbHelper.COLUMN_TITLE,DbHelper.COLUMN_REMINDER};
 
     public static ReminderDataSource newInstance(Context context){
         return new ReminderDataSource(context);
@@ -34,11 +36,15 @@ public class ReminderDataSource implements Serializable{
     }
     public Note createNote(String title, String reminder){
         ContentValues values = new ContentValues();
+        Random rnd = new Random();
+        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        values.put(DbHelper.IMAGE_COLOR,color);
         values.put(DbHelper.COLUMN_TITLE,title);
         values.put(DbHelper.COLUMN_REMINDER,reminder);
         long insertId = database.insert(DbHelper.TABLE_NAME,null,values);
         String[] ids = {insertId+""};
-        Cursor cursor = database.query(DbHelper.TABLE_NAME, allColumns, DbHelper.COLUMN_ID, ids, null,null,null);
+        Cursor cursor = database.query(DbHelper.TABLE_NAME, allColumns,
+                DbHelper.COLUMN_ID+"=?", ids, null,null,null);
         cursor.moveToFirst();
         Note newNote = cursorToNote(cursor);
         cursor.close();
@@ -49,7 +55,7 @@ public class ReminderDataSource implements Serializable{
         long id = note.getId();
         Log.d("Deletion","Comment deleted with id : "+id);
         String[] ids = {note.getId()+""};
-        database.delete(DbHelper.TABLE_NAME,DbHelper.COLUMN_ID,ids);
+        database.delete(DbHelper.TABLE_NAME,DbHelper.COLUMN_ID+"=?",ids);
     }
 
     public List<Note> getAllNotes(){
@@ -67,9 +73,10 @@ public class ReminderDataSource implements Serializable{
 
     private Note cursorToNote(Cursor cursor) {
         Note note = new Note();
-        note.setId(cursor.getLong(0));
-        note.setTitle(cursor.getString(1));
-        note.setReminder(cursor.getString(2));
+        note.setImgColor(cursor.getInt(0));
+        note.setId(cursor.getLong(1));
+        note.setTitle(cursor.getString(2));
+        note.setReminder(cursor.getString(3));
         return note;
     }
 }

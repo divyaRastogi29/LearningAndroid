@@ -19,9 +19,6 @@ public class JsonParser {
     String userPassword = "563492ad6f91700001000001d73171e95ed742c3582b9f773d830297";
 
     //TODO : is this constructor necessary? java already provides a default constructor when no other is defined
-    public JsonParser() {
-
-    }
 
     public JSONObject getJsonFromUrl(String url) {
         //TODO: is this initialisation necessary?

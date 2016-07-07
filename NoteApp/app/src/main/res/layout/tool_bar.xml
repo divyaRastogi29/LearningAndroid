@@ -5,12 +5,19 @@
     android:layout_width="match_parent"
     android:background="@color/colorPrimary"
     android:elevation="4dp">
-   <ImageButton
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Memorandum"
+        android:textSize="20dp"/>
+
+   <ImageView
        android:id="@+id/createButton"
        android:layout_width="45dp"
        android:layout_height="45dp"
        android:src="@drawable/plus"
-       android:layout_marginLeft="300dp"
+       android:layout_marginLeft="180dp"
        />
 
 </android.support.v7.widget.Toolbar>

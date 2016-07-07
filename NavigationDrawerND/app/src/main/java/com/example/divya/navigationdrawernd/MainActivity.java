@@ -3,6 +3,7 @@ package com.example.divya.navigationdrawernd;
 import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         setSupportActionBar(toolbar);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        setUpDrawerContent();
     }
 
     private void setUpDrawerContent() {
@@ -41,8 +43,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectDrawerItem(MenuItem item) {
+        Fragment fragment = null;
+        switch (item.getItemId()){
+            case R.id.nav_first_fragment:
+                fragment = new First_Fragment();
+                break;
+            case R.id.nav_second_fragment :
+                fragment = new Second_Fragment();
+                break;
+            case R.id.nav_third_fragment:
+                fragment = new Third_Fragment();
+                break;
+        }
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent,new First_Fragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.flContent,fragment).commit();
         drawerLayout.closeDrawers();
     }
 
