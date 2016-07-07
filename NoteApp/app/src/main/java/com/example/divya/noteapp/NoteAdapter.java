@@ -43,12 +43,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder>{
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         final Note note = notesList.get(position);
+        String newTitleSubString;
         holder.reminderText.setText(note.getReminder());
         int initial = note.getTitle().charAt(0);
         if((initial>=97)&&(initial<=122))
             initial = initial-32;
         holder.imgCircle.setText((char)initial+"");
-        String newTitleSubString = (char)initial+note.getTitle().substring(1);
+        if(note.getTitle().length()>1)
+         newTitleSubString = (char)initial+note.getTitle().substring(1);
+        else
+            newTitleSubString = (char)initial+"";
         holder.titleText.setText(newTitleSubString);
 
         Drawable background = holder.imgCircle.getBackground();

@@ -45,15 +45,22 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.submitButton) {
+            Note note= new Note();
+            Toast toast;
             String title = editTitle.getText().toString();
             String reminder = editReminder.getText().toString();
-            Note note = reminderDataSource.createNote(title, reminder);
-            Toast toast=Toast.makeText(getActivity(),"Reminder Set",Toast.LENGTH_SHORT);
+            if(title.length()>0) {
+                note = reminderDataSource.createNote(title, reminder);
+                toast=Toast.makeText(getActivity(),"Reminder Set",Toast.LENGTH_SHORT);
+                Log.d("Note Inserted", note.toString());
+            }
+            else
+                toast=Toast.makeText(getActivity(),"Title cannot be left empty",Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();
             editTitle.setText("");
             editReminder.setText("");
-            Log.d("Note Inserted", note.toString());
+
         }
         if(v.getId()==R.id.backButton){
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
