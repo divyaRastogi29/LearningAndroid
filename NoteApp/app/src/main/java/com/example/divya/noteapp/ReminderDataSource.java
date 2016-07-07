@@ -37,7 +37,7 @@ public class ReminderDataSource{
     public Note createNote(String title, String reminder){
         ContentValues values = new ContentValues();
         Random rnd = new Random();
-        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        int color = Color.argb(255, rnd.nextInt(125)+125, rnd.nextInt(125)+125, rnd.nextInt(125)+125);
         values.put(DbHelper.IMAGE_COLOR,color);
         values.put(DbHelper.COLUMN_TITLE,title);
         values.put(DbHelper.COLUMN_REMINDER,reminder);
