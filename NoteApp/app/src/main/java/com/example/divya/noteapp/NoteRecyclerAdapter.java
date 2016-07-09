@@ -1,38 +1,44 @@
 package com.example.divya.noteapp;
 
-import android.graphics.Color;
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by divya on 5/7/16.
  */
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder>{
+public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapter.MyViewHolder>{
     private  List<Note> notesList;
     private ReminderDataSource reminderDataSource;
+    private FragmentManager fragmentManager;
 
-    public  NoteAdapter(List<Note> notesList, ReminderDataSource reminderDataSource){
+    public NoteRecyclerAdapter(List<Note> notesList, ReminderDataSource reminderDataSource, FragmentManager fragmentManager){
         this.notesList = notesList;
         this.reminderDataSource = reminderDataSource ;
+        this.fragmentManager = fragmentManager;
     }
     public void newData(List<Note> notesList){
         this.notesList = notesList;
     }
-    public void removeNote(int position){
-        reminderDataSource.deleteNote(notesList.get(position));
-        notesList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position,notesList.size());
+    public void removeNotes(List<Note> notesList){
+        for(Note note : notesList) {
+            reminderDataSource.deleteNote(note);
+        }
+    }
+    public Note getNoteAtPosition(int pos){
+        return notesList.get(pos);
     }
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -50,7 +56,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder>{
             initial = initial-32;
         holder.imgCircle.setText((char)initial+"");
         if(note.getTitle().length()>1)
-         newTitleSubString = (char)initial+note.getTitle().substring(1);
+            newTitleSubString = (char)initial+note.getTitle().substring(1);
         else
             newTitleSubString = (char)initial+"";
         holder.titleText.setText(newTitleSubString);
@@ -67,6 +73,19 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder>{
         } else if (background instanceof ColorDrawable) {
             ((ColorDrawable) background).setColor(note.getImgColor());
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReminderFragment fragment = new ReminderFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("note",note);
+                fragment.setArguments(bundle);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .commit();
+            }
+        });
     }
 
     @Override

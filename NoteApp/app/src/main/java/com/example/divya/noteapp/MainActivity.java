@@ -20,22 +20,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initViews();
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         createButton.setOnClickListener(this);
+        RecyclerFragment fragment = new RecyclerFragment();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 
     private void initViews() {
         toolbar = (Toolbar)findViewById(R.id.toolBar);
         createButton = (ImageView)findViewById(R.id.createButton);
         fragmentManager = getSupportFragmentManager();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        RecyclerFragment fragment = new RecyclerFragment();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
     }
 
     @Override

@@ -3,10 +3,12 @@ package com.example.divya.noteapp;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.io.Serializable;
+
 /**
  * Created by divya on 2/7/16.
  */
-public class Note {
+public class Note implements Serializable{
     private long id;
     private String title;
     private String reminder;

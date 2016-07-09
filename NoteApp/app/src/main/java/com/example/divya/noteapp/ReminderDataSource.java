@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by divya on 2/7/16.
@@ -49,6 +50,16 @@ public class ReminderDataSource{
         Note newNote = cursorToNote(cursor);
         cursor.close();
         return newNote;
+    }
+
+    public void updateNote(long id, String title, String reminder, int color){
+        ContentValues values = new ContentValues();
+        values.put(DbHelper.IMAGE_COLOR,color);
+        values.put(DbHelper.COLUMN_TITLE,title);
+        values.put(DbHelper.COLUMN_REMINDER,reminder);
+        String[] ids = {id+""};
+       int noOfRowsAffected = database.update(DbHelper.TABLE_NAME, values, DbHelper.COLUMN_ID+"=?", ids);
+        Log.d("Updated : ",noOfRowsAffected+"");
     }
 
     public void deleteNote(Note note){

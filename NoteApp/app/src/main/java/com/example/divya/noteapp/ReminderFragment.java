@@ -22,19 +22,26 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
     private Button submitButton;
     private Button backButton;
     private ReminderDataSource reminderDataSource;
+    private Note note;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_layout,container,false);
+        View view = inflater.inflate(R.layout.fragment_layout, container, false);
         reminderDataSource = ReminderDataSource.newInstance(getActivity());
         reminderDataSource.open();
         initViews(view);
         submitButton.setOnClickListener(this);
         backButton.setOnClickListener(this);
+        if (getArguments() != null) {
+            note = (Note) getArguments().getSerializable("note");
+            if (note != null) {
+                editTitle.setText(note.getTitle());
+                editReminder.setText(note.getReminder());
+            }
+        }
         return view;
     }
-
     private void initViews(View view) {
         submitButton = (Button)view.findViewById(R.id.submitButton);
         backButton = (Button)view.findViewById(R.id.backButton);
@@ -44,19 +51,32 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+        Toast toast;
         if(v.getId()==R.id.submitButton) {
-            Note note= new Note();
-            Toast toast;
-            String title = editTitle.getText().toString();
-            String reminder = editReminder.getText().toString();
-            if(title.length()>0) {
-                note = reminderDataSource.createNote(title, reminder);
-                toast=Toast.makeText(getActivity(),"Reminder Set",Toast.LENGTH_SHORT);
-                Log.d("Note Inserted", note.toString());
+            if((note == null)||(note.getId()==0)) {
+                note = new Note();
+
+                String title = editTitle.getText().toString().trim();
+                String reminder = editReminder.getText().toString().trim();
+                if (title.length() > 0) {
+                    note = reminderDataSource.createNote(title, reminder);
+                    toast = Toast.makeText(getActivity(), "Reminder Set", Toast.LENGTH_SHORT);
+                    Log.d("Note Inserted", note.toString());
+                } else
+                    toast = Toast.makeText(getActivity(), "Title cannot be left empty", Toast.LENGTH_SHORT);
+
             }
-            else
-                toast=Toast.makeText(getActivity(),"Title cannot be left empty",Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER,0,0);
+            else{
+                String title = editTitle.getText().toString();
+                String reminder = editReminder.getText().toString();
+                if (title.length() > 0) {
+                    reminderDataSource.updateNote(note.getId(),title, reminder, note.getImgColor());
+                    toast = Toast.makeText(getActivity(), "Reminder Updated", Toast.LENGTH_SHORT);
+                    Log.d("Note Updated", note.toString());
+                } else
+                    toast = Toast.makeText(getActivity(), "Title cannot be left empty", Toast.LENGTH_SHORT);
+            }
+            toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
             editTitle.setText("");
             editReminder.setText("");
