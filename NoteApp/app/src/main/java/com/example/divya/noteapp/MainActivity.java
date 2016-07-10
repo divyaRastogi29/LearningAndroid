@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity{
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         RecyclerFragment fragment = new RecyclerFragment();
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment).addToBackStack(null)
+                .replace(R.id.fragment_container, fragment)
                 .commit();
     }
 
@@ -31,4 +31,5 @@ public class MainActivity extends AppCompatActivity{
         toolbar = (Toolbar)findViewById(R.id.toolBar);
         fragmentManager = getSupportFragmentManager();
     }
+
 }

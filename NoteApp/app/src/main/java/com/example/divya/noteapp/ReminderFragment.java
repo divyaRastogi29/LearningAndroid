@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 /**
@@ -24,6 +25,7 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
     private EditText editReminder;
     private FloatingActionButton submitButton;
     private ReminderDataSource reminderDataSource;
+    private LinearLayout linearLayout;
     private Note note;
 
     @Nullable
@@ -48,33 +50,69 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
         submitButton = (FloatingActionButton)view.findViewById(R.id.submitButton);
         editTitle = (EditText) view.findViewById(R.id.titleNote);
         editReminder = (EditText)view.findViewById(R.id.reminderNote);
+        linearLayout = (LinearLayout)getActivity().findViewById(R.id.linearLayout);
     }
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.submitButton) {
-            if((note == null)||(note.getId()==0)) {
-                note = new Note();
+        if((note == null)||(note.getId()==0)) {
+            note = new Note();
 
-                String title = editTitle.getText().toString().trim();
-                String reminder = editReminder.getText().toString().trim();
-                if (title.length() > 0) {
-                    note = reminderDataSource.createNote(title, reminder);
-                    getFragmentManager().popBackStackImmediate();
-                    Log.d("Note Inserted", note.toString());
-                } else
-                    Snackbar.make(v,"Title cannot be left empty",Snackbar.LENGTH_SHORT).show();
+            String title = editTitle.getText().toString().trim();
+            String reminder = editReminder.getText().toString().trim();
+            if (title.length() > 0) {
+                note = reminderDataSource.createNote(title, reminder);
+                Snackbar.make(v,"Reminder created",Snackbar.LENGTH_SHORT).show();
+                getFragmentManager().popBackStackImmediate();
+                Log.d("Note Inserted", note.toString());
+            } else
+                Snackbar.make(v,"Title cannot be left empty",Snackbar.LENGTH_SHORT).show();
+        }
+        else{
+            String title = editTitle.getText().toString();
+            String reminder = editReminder.getText().toString();
+            if (title.length() > 0) {
+                reminderDataSource.updateNote(note.getId(),title, reminder, note.getImgColor());
+                Snackbar.make(v,"Reminder updated",Snackbar.LENGTH_SHORT).show();
+                getFragmentManager().popBackStackImmediate();
+                Log.d("Note Updated", note.toString());
+            } else
+                Snackbar.make(v,"Title cannot be left empty",Snackbar.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if((note == null)||(note.getId()==0)) {
+            note = new Note();
+
+            String title = editTitle.getText().toString().trim();
+            String reminder = editReminder.getText().toString().trim();
+            if (title.length() > 0) {
+                note = reminderDataSource.createNote(title, reminder);
+                Snackbar.make(linearLayout,"Reminder created",Snackbar.LENGTH_SHORT).show();
+                Log.d("Note Inserted", note.toString());
+            } else {
+                Snackbar.make(linearLayout, "Title cannot be left empty . Note created with default title",
+                        Snackbar.LENGTH_SHORT).show();
+                note = reminderDataSource.createNote("Set title", reminder);
             }
-            else{
-                String title = editTitle.getText().toString();
-                String reminder = editReminder.getText().toString();
-                if (title.length() > 0) {
-                    reminderDataSource.updateNote(note.getId(),title, reminder, note.getImgColor());
-                    getFragmentManager().popBackStackImmediate();
-                    Log.d("Note Updated", note.toString());
-                } else
-                    Snackbar.make(v,"Title cannot be left empty",Snackbar.LENGTH_SHORT).show();
+        }
+        else{
+            String title = editTitle.getText().toString();
+            String reminder = editReminder.getText().toString();
+            if (title.length() > 0) {
+                reminderDataSource.updateNote(note.getId(),title, reminder, note.getImgColor());
+                Snackbar.make(linearLayout,"Reminder updated",Snackbar.LENGTH_SHORT).show();
+                Log.d("Note Updated", note.toString());
+            } else {
+                Snackbar.make(linearLayout, "Title cannot be left empty . Note updated with default title",
+                        Snackbar.LENGTH_SHORT).show();
+                reminderDataSource.updateNote(note.getId(),title, reminder, note.getImgColor());
             }
         }
     }
+
 }

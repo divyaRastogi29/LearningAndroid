@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class RecyclerFragment extends Fragment {
     private ReminderDataSource reminderDataSource;
     private NoteRecyclerAdapter adapter;
     private FloatingActionButton createButton;
+    private ImageView imageViewNoData;
 
     @Override
     public void onAttach(Context context) {
@@ -64,10 +66,12 @@ public class RecyclerFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP |
+                ItemTouchHelper.DOWN,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
                 return false;
             }
 
@@ -75,7 +79,8 @@ public class RecyclerFragment extends Fragment {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 final int mAdapterPos = viewHolder.getAdapterPosition();
                 final Note note = adapter.getNoteAtPosition(mAdapterPos);
-                Snackbar.make(viewHolder.itemView, "Deleted Note", Snackbar.LENGTH_SHORT).setAction("UNDO", new View.OnClickListener() {
+                Snackbar.make(viewHolder.itemView, "Deleted Note", Snackbar.LENGTH_SHORT).setAction(
+                        "UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         notesList.add(mAdapterPos, note);
@@ -100,6 +105,7 @@ public class RecyclerFragment extends Fragment {
         notesList = new ArrayList<>();
         notesToDelete = new ArrayList<>();
         createButton = (FloatingActionButton)view.findViewById(R.id.createButton);
+        imageViewNoData = (ImageView)view.findViewById(R.id.imageNoData);
     }
 
     @Override
@@ -127,12 +133,9 @@ public class RecyclerFragment extends Fragment {
             if (notes.size() != 0) {
                 adapter.newData(notes);
                 adapter.notifyDataSetChanged();
+                imageViewNoData.setVisibility(View.GONE);
             } else {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                NoReminderFragment fragment = new NoReminderFragment();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
-                        .commit();
+               imageViewNoData.setVisibility(View.VISIBLE);
             }
         }
     }
