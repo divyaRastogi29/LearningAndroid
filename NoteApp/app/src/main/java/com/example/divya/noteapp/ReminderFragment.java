@@ -95,9 +95,11 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
                 Snackbar.make(linearLayout,"Reminder created",Snackbar.LENGTH_SHORT).show();
                 Log.d("Note Inserted", note.toString());
             } else {
-                Snackbar.make(linearLayout, "Title cannot be left empty . Note created with default title",
-                        Snackbar.LENGTH_SHORT).show();
-                note = reminderDataSource.createNote("Set title", reminder);
+                if(reminder.length()>0) {
+                    Snackbar.make(linearLayout, "Title cannot be left empty . Note created with default title",
+                            Snackbar.LENGTH_SHORT).show();
+                    note = reminderDataSource.createNote("Set title", reminder);
+                }
             }
         }
         else{
@@ -108,9 +110,11 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
                 Snackbar.make(linearLayout,"Reminder updated",Snackbar.LENGTH_SHORT).show();
                 Log.d("Note Updated", note.toString());
             } else {
-                Snackbar.make(linearLayout, "Title cannot be left empty . Note updated with default title",
-                        Snackbar.LENGTH_SHORT).show();
-                reminderDataSource.updateNote(note.getId(),title, reminder, note.getImgColor());
+                if(reminder.length()>0) {
+                    Snackbar.make(linearLayout, "Title cannot be left empty . Note updated with default title",
+                            Snackbar.LENGTH_SHORT).show();
+                    reminderDataSource.updateNote(note.getId(), title, reminder, note.getImgColor());
+                }
             }
         }
     }
