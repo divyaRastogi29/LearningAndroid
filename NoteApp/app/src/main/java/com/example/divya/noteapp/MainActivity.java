@@ -1,6 +1,7 @@
 package com.example.divya.noteapp;
 
 import android.media.Image;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,9 +10,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity{
     private Toolbar toolbar;
-    private ImageView createButton;
     private FragmentManager fragmentManager;
 
     @Override
@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initViews();
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        createButton.setOnClickListener(this);
         RecyclerFragment fragment = new RecyclerFragment();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -30,17 +29,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initViews() {
         toolbar = (Toolbar)findViewById(R.id.toolBar);
-        createButton = (ImageView)findViewById(R.id.createButton);
         fragmentManager = getSupportFragmentManager();
     }
-
-    @Override
-    public void onClick(View v) {
-        ReminderFragment fragment = new ReminderFragment();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
-    }
-
-
 }

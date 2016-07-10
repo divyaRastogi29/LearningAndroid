@@ -12,12 +12,4 @@
         android:text="Memo"
         android:textSize="20dp"/>
 
-   <ImageView
-       android:id="@+id/createButton"
-       android:layout_width="45dp"
-       android:layout_height="45dp"
-       android:src="@drawable/plus"
-       android:layout_marginLeft="240dp"
-       />
-
 </android.support.v7.widget.Toolbar>

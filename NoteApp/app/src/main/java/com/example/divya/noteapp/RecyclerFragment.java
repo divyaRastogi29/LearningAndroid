@@ -1,9 +1,11 @@
 package com.example.divya.noteapp;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +30,7 @@ public class RecyclerFragment extends Fragment {
     private RecyclerView recyclerView;
     private ReminderDataSource reminderDataSource;
     private NoteRecyclerAdapter adapter;
+    private FloatingActionButton createButton;
 
     @Override
     public void onAttach(Context context) {
@@ -41,6 +44,16 @@ public class RecyclerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recycler_fragment_layout, container, false);
         initViews(view);
+        createButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReminderFragment fragment = new ReminderFragment();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .commit();
+            }
+        });
         bindViews();
         return view;
     }
@@ -86,12 +99,14 @@ public class RecyclerFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewId);
         notesList = new ArrayList<>();
         notesToDelete = new ArrayList<>();
+        createButton = (FloatingActionButton)view.findViewById(R.id.createButton);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         adapter.removeNotes(notesToDelete);
+        notesToDelete = new ArrayList<>();
     }
 
     @Override

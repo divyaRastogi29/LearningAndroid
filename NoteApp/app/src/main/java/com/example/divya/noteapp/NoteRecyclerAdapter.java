@@ -50,7 +50,6 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         final Note note = notesList.get(position);
         String newTitleSubString;
-        holder.reminderText.setText(note.getReminder());
         int initial = note.getTitle().charAt(0);
         if((initial>=97)&&(initial<=122))
             initial = initial-32;
@@ -93,13 +92,12 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
         return notesList.size();
     }
     public class MyViewHolder extends RecyclerView.ViewHolder{
-        public TextView  titleText, reminderText;
+        public TextView  titleText;
         public TextView imgCircle;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             titleText = (TextView)itemView.findViewById(R.id.titleText);
-            reminderText = (TextView)itemView.findViewById(R.id.reminderText);
             imgCircle = (TextView)itemView.findViewById(R.id.imgCircle);
         }
 
