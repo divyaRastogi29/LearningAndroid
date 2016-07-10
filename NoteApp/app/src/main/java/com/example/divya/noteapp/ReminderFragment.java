@@ -1,7 +1,10 @@
 package com.example.divya.noteapp;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -19,8 +22,7 @@ import android.widget.Toast;
 public class ReminderFragment extends Fragment implements View.OnClickListener{
     private EditText editTitle;
     private EditText editReminder;
-    private Button submitButton;
-    private Button backButton;
+    private FloatingActionButton submitButton;
     private ReminderDataSource reminderDataSource;
     private Note note;
 
@@ -31,8 +33,8 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
         reminderDataSource = ReminderDataSource.newInstance(getActivity());
         reminderDataSource.open();
         initViews(view);
+        submitButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         submitButton.setOnClickListener(this);
-        backButton.setOnClickListener(this);
         if (getArguments() != null) {
             note = (Note) getArguments().getSerializable("note");
             if (note != null) {
@@ -43,15 +45,13 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
         return view;
     }
     private void initViews(View view) {
-        submitButton = (Button)view.findViewById(R.id.submitButton);
-        backButton = (Button)view.findViewById(R.id.backButton);
+        submitButton = (FloatingActionButton)view.findViewById(R.id.submitButton);
         editTitle = (EditText) view.findViewById(R.id.titleNote);
         editReminder = (EditText)view.findViewById(R.id.reminderNote);
     }
 
     @Override
     public void onClick(View v) {
-        Toast toast;
         if(v.getId()==R.id.submitButton) {
             if((note == null)||(note.getId()==0)) {
                 note = new Note();
@@ -60,34 +60,21 @@ public class ReminderFragment extends Fragment implements View.OnClickListener{
                 String reminder = editReminder.getText().toString().trim();
                 if (title.length() > 0) {
                     note = reminderDataSource.createNote(title, reminder);
-                    toast = Toast.makeText(getActivity(), "Reminder Set", Toast.LENGTH_SHORT);
+                    getFragmentManager().popBackStackImmediate();
                     Log.d("Note Inserted", note.toString());
                 } else
-                    toast = Toast.makeText(getActivity(), "Title cannot be left empty", Toast.LENGTH_SHORT);
-
+                    Snackbar.make(v,"Title cannot be left empty",Snackbar.LENGTH_SHORT).show();
             }
             else{
                 String title = editTitle.getText().toString();
                 String reminder = editReminder.getText().toString();
                 if (title.length() > 0) {
                     reminderDataSource.updateNote(note.getId(),title, reminder, note.getImgColor());
-                    toast = Toast.makeText(getActivity(), "Reminder Updated", Toast.LENGTH_SHORT);
+                    getFragmentManager().popBackStackImmediate();
                     Log.d("Note Updated", note.toString());
                 } else
-                    toast = Toast.makeText(getActivity(), "Title cannot be left empty", Toast.LENGTH_SHORT);
+                    Snackbar.make(v,"Title cannot be left empty",Snackbar.LENGTH_SHORT).show();
             }
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-            editTitle.setText("");
-            editReminder.setText("");
-
-        }
-        if(v.getId()==R.id.backButton){
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            RecyclerFragment fragment = new RecyclerFragment();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
         }
     }
 }

@@ -50,7 +50,7 @@ public class RecyclerFragment extends Fragment {
             public void onClick(View v) {
                 ReminderFragment fragment = new ReminderFragment();
                 getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
+                        .replace(R.id.fragment_container, fragment).addToBackStack(null)
                         .commit();
             }
         });

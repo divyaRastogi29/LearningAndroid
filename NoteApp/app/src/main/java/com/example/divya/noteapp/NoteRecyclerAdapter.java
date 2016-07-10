@@ -81,7 +81,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
                 bundle.putSerializable("note",note);
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
+                        .replace(R.id.fragment_container, fragment).addToBackStack(null)
                         .commit();
             }
         });

@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity{
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         RecyclerFragment fragment = new RecyclerFragment();
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
+                .replace(R.id.fragment_container, fragment).addToBackStack(null)
                 .commit();
     }
 
