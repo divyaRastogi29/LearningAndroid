@@ -50,10 +50,13 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         final Note note = notesList.get(position);
         String newTitleSubString;
-        int initial = note.getTitle().charAt(0);
-        if((initial>=97)&&(initial<=122))
-            initial = initial-32;
-        holder.imgCircle.setText((char)initial+"");
+        int initial=0;
+        if(note.getTitle().length()>0) {
+             initial = note.getTitle().charAt(0);
+            if ((initial >= 97) && (initial <= 122))
+                initial = initial - 32;
+            holder.imgCircle.setText((char) initial + "");
+        }
         if(note.getTitle().length()>1)
             newTitleSubString = (char)initial+note.getTitle().substring(1);
         else

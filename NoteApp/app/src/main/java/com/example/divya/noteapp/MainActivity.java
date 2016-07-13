@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity{
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity{
     private void initViews() {
         toolbar = (Toolbar)findViewById(R.id.toolBar);
         fragmentManager = getSupportFragmentManager();
+
     }
+
 
 }

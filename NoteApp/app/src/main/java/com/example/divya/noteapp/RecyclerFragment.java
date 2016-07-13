@@ -37,7 +37,7 @@ public class RecyclerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        reminderDataSource = ReminderDataSource.newInstance(getActivity());
+        reminderDataSource = ReminderDataSource.getInstance(getActivity());
         reminderDataSource.open();
     }
 

@@ -2,48 +2,110 @@
 <ScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/linearLayout"
-        android:orientation="vertical" android:layout_width="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:id="@+id/linearId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/coordinatorLayout">
+        <android.support.design.widget.CoordinatorLayout
+            android:orientation="vertical" android:layout_width="match_parent"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_height="0dp"
+            android:layout_weight="0.7">
+            <LinearLayout
+                android:id="@+id/linearId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Title"
+                    android:textSize="20dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="20dp"/>
+                <EditText
+                    android:id="@+id/titleNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/white"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Message"
+                    android:textSize="20dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="20dp"/>
+                <EditText
+                    android:id="@+id/reminderNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/white"/>
+            </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/submitButton"
+                android:src="@drawable/send"
+                app:fabSize="normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom" />
+
+        </android.support.design.widget.CoordinatorLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="0.3">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/clock"
+                android:layout_marginLeft="20dp"
+                android:backgroundTint="@color/grey"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Set Title"
-                android:layout_margin="30dp"/>
-            <EditText
-                android:id="@+id/titleNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@color/white"/>
-            <TextView
+                android:text="Remind Me"
+                android:textSize="20dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"/>
+            <Switch
+                android:id="@+id/switchId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Set Message"
-                android:layout_margin="30dp"/>
-            <EditText
-                android:id="@+id/reminderNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@color/white"/>
+                android:layout_gravity="end"
+                android:layout_marginLeft="140dp" />
         </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/submitButton"
-            android:src="@drawable/send"
-            app:fabSize="normal"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linearDateId"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom" />
+            android:layout_marginLeft="20dp"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/dateId"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Today"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\@  "/>
+            <TextView
+                android:id="@+id/timeId"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </LinearLayout>
 </ScrollView>

@@ -22,7 +22,7 @@ public class ReminderDataSource{
     private DbHelper dbHelper;
     private String[] allColumns = {DbHelper.IMAGE_COLOR, DbHelper.COLUMN_ID,DbHelper.COLUMN_TITLE,DbHelper.COLUMN_REMINDER};
 
-    public static ReminderDataSource newInstance(Context context){
+    public static ReminderDataSource getInstance(Context context){
         return new ReminderDataSource(context);
     }
 
