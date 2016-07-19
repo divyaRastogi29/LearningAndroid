@@ -3,20 +3,23 @@
     package="com.example.divya.noteapp">
 
     <application
+        android:name=".NoteApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Memo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name="Alarm" >
-        </receiver>
-        <activity android:name=".MainActivity">
+
+        <receiver android:name=".receiver.AlarmReceiver" />
+
+        <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
