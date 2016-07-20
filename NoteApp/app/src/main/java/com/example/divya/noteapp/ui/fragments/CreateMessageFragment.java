@@ -65,6 +65,18 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
                     String time = note.getTime();
                     mDate.setText(note.getTime().split(" ")[0]);
                     mTime.setText(note.getTime().split(" ")[1]);
+                    mDate.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showPopUpDate();
+                        }
+                    });
+                    mTime.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showPopUpTime();
+                        }
+                    });
                 }
             }
         }
