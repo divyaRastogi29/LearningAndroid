@@ -42,6 +42,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
     private Switch mSwitch;
     private TextView mDate, mTime;
     private Calendar mCalendar;
+    private int flag = 0;
 
     @Nullable
     @Override
@@ -57,6 +58,12 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
             if (note != null) {
                 editTitle.setText(note.getTitle());
                 editReminder.setText(note.getReminder());
+                if(note.isAlarmSet()==1) {
+                    mSwitch.toggle();
+                    linearDateId.setVisibility(View.VISIBLE);
+                    mDate.setText(note.getTime().split(" ")[0]);
+                    mTime.setText(note.getTime().split(" ")[1]);
+                }
             }
         }
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -167,93 +174,80 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if((note == null)||(note.getId()==0)) {
-            note = new Note();
-
-            final  String title = editTitle.getText().toString().trim();
-            final String reminder = editReminder.getText().toString().trim();
-
-            if (title.length() > 0) {
-                new Thread(new CreateRunnable(title,reminder)).start();
-                Snackbar.make(v,"Reminder created",Snackbar.LENGTH_SHORT).show();
-                getFragmentManager().popBackStackImmediate();
-                Log.d("Note Inserted", note.toString());
-            } else {
-                Snackbar.make(v, "Title cannot be left empty", Snackbar.LENGTH_SHORT).show();
-            }
+            createNote(v);
         }
         else{
-            final String title = editTitle.getText().toString();
-            final String reminder = editReminder.getText().toString();
-            if (title.length() > 0) {
-                new Thread(new UpdateRunnable(note.getId(),title, reminder, note.getImgColor())).start();
-                Snackbar.make(v,"Reminder updated",Snackbar.LENGTH_SHORT).show();
-                getFragmentManager().popBackStackImmediate();
-                Log.d("Note Updated", note.toString());
-            } else
-                Snackbar.make(v,"Title cannot be left empty",Snackbar.LENGTH_SHORT).show();
+            updateNote(v);
         }
-
-        if(mSwitch.isChecked()){
-            setAlarm();
-        }
-
-    }
-
-    private void setAlarm() {
-        NoteAlarmManager noteAlarmManager = NoteAlarmManager.getInstance();
-        noteAlarmManager.setAlarm(mCalendar,note);
+        flag=1;
+        getFragmentManager().popBackStackImmediate();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        if((note == null)||(note.getId()==0)) {
-            note = new Note();
+        if(flag==0) {
+            if ((note == null) || (note.getId() == 0)) {
+                createNote(linearLayout);
+            } else {
+                updateNote(linearLayout);
+            }
+        }
+    }
 
-            final String title = editTitle.getText().toString().trim();
-            final  String reminder = editReminder.getText().toString().trim();
-            if (title.length() > 0) {
-                new Thread(new CreateRunnable(title,reminder)).start();
-                Snackbar.make(linearLayout,"Reminder created",Snackbar.LENGTH_SHORT).show();
-                Log.d("Note Inserted", note.toString());
-            } else {
-                if(reminder.length()>0) {
-                    Snackbar.make(linearLayout, "Title cannot be left empty . Note created with default title",
-                            Snackbar.LENGTH_SHORT).show();
-                    new Thread(new CreateRunnable("Set title",reminder)).start();
-                }
-            }
+    public void createNote(View v) {
+        note = new Note();
+        final String title = editTitle.getText().toString().trim();
+        final String reminder = editReminder.getText().toString().trim();
+        int isAlarmSet = 0;
+        String time = "";
+        if (mSwitch.isChecked()) {
+            isAlarmSet = 1;
+            time = mDate.getText() + " " + mTime.getText();
         }
-        else{
-            final String title = editTitle.getText().toString();
-            final String reminder = editReminder.getText().toString();
-            if (title.length() > 0) {
-                new Thread(new UpdateRunnable(note.getId(),title, reminder, note.getImgColor())).start();
-                Snackbar.make(linearLayout,"Reminder updated",Snackbar.LENGTH_SHORT).show();
-                Log.d("Note Updated", note.toString());
-            } else {
-                if(reminder.length()>0) {
-                    Snackbar.make(linearLayout, "Title cannot be left empty . Note updated with default title",
-                            Snackbar.LENGTH_SHORT).show();
-                    new Thread(new UpdateRunnable(note.getId(), "Set title", reminder, note.getImgColor())).start();
-                }
-            }
+
+        if (title.length() > 0) {
+            new Thread(new CreateRunnable(title, reminder, isAlarmSet, time)).start();
+            Snackbar.make(v, "Reminder created", Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
+            new Thread(new CreateRunnable("ToDo", reminder, isAlarmSet, time)).start();
         }
+    }
+
+    public void updateNote(View v){
+        final String title = editTitle.getText().toString();
+        final String reminder = editReminder.getText().toString();
+        int isAlarmSet = 0;
+        String time = "";
         if(mSwitch.isChecked()){
-            setAlarm();
+            isAlarmSet =1;
+            time = mDate.getText()+" "+mTime.getText();
+        }
+        if (title.length() > 0) {
+            new Thread(new UpdateRunnable(note.getId(),title, reminder, note.getImgColor(),isAlarmSet,time)).start();
+            Snackbar.make(v,"Reminder updated",Snackbar.LENGTH_SHORT).show();
+            Log.d("Note Updated", note.toString());
+        } else {
+            Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
+            new Thread(new UpdateRunnable(note.getId(),"ToDo", reminder, note.getImgColor(),isAlarmSet,time)).start();
         }
     }
 
     class CreateRunnable implements Runnable {
-        String title, reminder;
+        String title, reminder, time;
+        int isAlarmSet;
         Note note;
-        CreateRunnable(String title, String reminder){
+        CreateRunnable(String title, String reminder, int isAlarmSet, String time){
+            this.isAlarmSet = isAlarmSet;
+            this.time = time;
             this.title = title ;
             this.reminder = reminder;
         }
         @Override
         public void run() {
-            note = reminderDataSource.createNote(title, reminder);
+            note = reminderDataSource.createNote(title, reminder, isAlarmSet,time);
+            Log.d("Note Inserted", note.toString());
             if(mSwitch.isChecked()) {
                 NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
             }
@@ -261,17 +255,21 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
     }
 
     class UpdateRunnable implements Runnable {
-
-        long  id ;String title, reminder ; int color;
-        UpdateRunnable(long  id , String title, String reminder, int color){
+        long  id ;String title, reminder,time ; int color, isAlarmSet;
+        UpdateRunnable(long  id , String title, String reminder, int color,int isAlarmSet,String time){
             this.id = id;
             this.title = title;
             this.reminder = reminder;
             this.color = color;
+            this.isAlarmSet = isAlarmSet;
+            this.time = time;
         }
         @Override
         public void run() {
-            reminderDataSource.updateNote(id,title, reminder, color);
+            reminderDataSource.updateNote(id,title, reminder, color, isAlarmSet,time);
+            if(mSwitch.isChecked()) {
+                NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
+            }
         }
     }
 }

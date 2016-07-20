@@ -17,8 +17,10 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_REMINDER = "reminder";
+    public static final String isAlarmSet = "isAlarmSet";
+    public static final String TIME = "time";
     private static final String query = "create table "+TABLE_NAME+" ("+IMAGE_COLOR+" integer, "+COLUMN_ID+ " integer primary key " +
-            "autoincrement, "+COLUMN_TITLE+ ","+COLUMN_REMINDER+" not null);";
+            "autoincrement, "+COLUMN_TITLE+ ","+COLUMN_REMINDER+" not null ,"+isAlarmSet+" Boolean Default 0, "+TIME+");";
 
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

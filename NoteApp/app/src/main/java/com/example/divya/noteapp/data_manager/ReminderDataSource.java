@@ -20,7 +20,8 @@ import java.util.Random;
 public class ReminderDataSource{
     private SQLiteDatabase database;
     private DbHelper dbHelper;
-    private String[] allColumns = {DbHelper.IMAGE_COLOR, DbHelper.COLUMN_ID,DbHelper.COLUMN_TITLE,DbHelper.COLUMN_REMINDER};
+    private String[] allColumns = {DbHelper.IMAGE_COLOR, DbHelper.COLUMN_ID,DbHelper.COLUMN_TITLE,DbHelper.COLUMN_REMINDER,
+    DbHelper.isAlarmSet,DbHelper.TIME};
 
     public static ReminderDataSource getInstance(Context context){
         return new ReminderDataSource(context);
@@ -35,13 +36,15 @@ public class ReminderDataSource{
     public void close(){
         dbHelper.close();
     }
-    public Note createNote(String title, String reminder){
+    public Note createNote(String title, String reminder, int isAlarmSet, String time){
         ContentValues values = new ContentValues();
         Random rnd = new Random();
         int color = Color.argb(255, rnd.nextInt(125)+125, rnd.nextInt(125)+125, rnd.nextInt(125)+125);
         values.put(DbHelper.IMAGE_COLOR,color);
         values.put(DbHelper.COLUMN_TITLE,title);
         values.put(DbHelper.COLUMN_REMINDER,reminder);
+        values.put(DbHelper.isAlarmSet, isAlarmSet);
+        values.put(DbHelper.TIME, time);
         long insertId = database.insert(DbHelper.TABLE_NAME,null,values);
         String[] ids = {insertId+""};
         Cursor cursor = database.query(DbHelper.TABLE_NAME, allColumns,
@@ -52,11 +55,13 @@ public class ReminderDataSource{
         return newNote;
     }
 
-    public void updateNote(long id, String title, String reminder, int color){
+    public void updateNote(long id, String title, String reminder, int color, int isAlarmSet, String time){
         ContentValues values = new ContentValues();
         values.put(DbHelper.IMAGE_COLOR,color);
         values.put(DbHelper.COLUMN_TITLE,title);
         values.put(DbHelper.COLUMN_REMINDER,reminder);
+        values.put(DbHelper.isAlarmSet, isAlarmSet);
+        values.put(DbHelper.TIME, time);
         String[] ids = {id+""};
        int noOfRowsAffected = database.update(DbHelper.TABLE_NAME, values, DbHelper.COLUMN_ID+"=?", ids);
         Log.d("Updated : ",noOfRowsAffected+"");
@@ -88,6 +93,8 @@ public class ReminderDataSource{
         note.setId(cursor.getLong(1));
         note.setTitle(cursor.getString(2));
         note.setReminder(cursor.getString(3));
+        note.setisAlarmSet(cursor.getInt(4));
+        note.setTime(cursor.getString(5));
         return note;
     }
 }

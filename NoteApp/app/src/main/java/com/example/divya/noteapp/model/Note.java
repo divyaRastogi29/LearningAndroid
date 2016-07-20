@@ -13,20 +13,15 @@ public class Note implements Serializable {
     private String title;
     private String reminder;
     private int imgColor;
-
-
-
-    private boolean isChecked;
+    private int isAlarmSet;
+    private String time;
 
     public String getTime() {
         return time;
     }
-
     public void setTime(String time) {
         this.time = time;
     }
-
-    private String time;
 
     public int getImgColor() {
         return imgColor;
@@ -57,14 +52,13 @@ public class Note implements Serializable {
     public void setReminder(String reminder) {
         this.reminder = reminder;
     }
-    public boolean isChecked() {
-        return isChecked;
+    public int isAlarmSet() {
+        return isAlarmSet;
     }
 
-    public void setChecked(boolean checked) {
-        isChecked = checked;
+    public void setisAlarmSet(int checked) {
+        isAlarmSet = checked;
     }
-
 
     public String toString(){
         return id+" "+title+" "+reminder;

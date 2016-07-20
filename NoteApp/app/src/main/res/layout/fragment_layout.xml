@@ -91,12 +91,21 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:visibility="gone">
-            <TextView
-                android:id="@+id/dateId"
-                android:layout_width="150dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Today"/>
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/dateId"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Today"/>
+                <View
+                    android:layout_width="150dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
