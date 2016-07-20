@@ -24,12 +24,11 @@ public class MainActivity extends AppCompatActivity{
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        if(savedInstanceState!=null)
-          note = (Note)savedInstanceState.getSerializable(AlarmReceiver.NOTE);
+        Bundle bundle = new Bundle();
+        note= (Note)bundle.getSerializable(AlarmReceiver.NOTE);
         if(note!=null){
             CreateMessageFragment fragment = new CreateMessageFragment();
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(AlarmReceiver.NOTE,note);
+            //  bundle.putSerializable(AlarmReceiver.NOTE,note);
             fragment.setArguments(bundle);
             fragmentManager.beginTransaction().
                     replace(R.id.fragment_container, fragment)

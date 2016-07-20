@@ -1,5 +1,6 @@
 package com.example.divya.noteapp.ui.fragments;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -61,6 +62,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
                 if(note.isAlarmSet()==1) {
                     mSwitch.toggle();
                     linearDateId.setVisibility(View.VISIBLE);
+                    String time = note.getTime();
                     mDate.setText(note.getTime().split(" ")[0]);
                     mTime.setText(note.getTime().split(" ")[1]);
                 }
@@ -104,12 +106,12 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         tp.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                mTime.setText(hourOfDay+":"+minute);
-
                 mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 mCalendar.set(Calendar.MINUTE, minute);
+                mTime.setText(hourOfDay+":"+minute);
                 popupWindow.dismiss();
             }
+
         });
         coordinateLayout.post(new Runnable() {
             @Override
@@ -173,10 +175,10 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if((note == null)||(note.getId()==0)) {
-            createNote(v);
+            createNote(linearLayout);
         }
         else{
-            updateNote(v);
+            updateNote(linearLayout);
         }
         flag=1;
         getFragmentManager().popBackStackImmediate();
@@ -201,16 +203,20 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         int isAlarmSet = 0;
         String time = "";
         if (mSwitch.isChecked()) {
-            isAlarmSet = 1;
-            time = mDate.getText() + " " + mTime.getText();
+            if((!mDate.getText().equals(""))&&(!mTime.getText().equals(""))) {
+                isAlarmSet = 1;
+                time = mDate.getText() + " " + mTime.getText();
+            }
         }
 
         if (title.length() > 0) {
             new Thread(new CreateRunnable(title, reminder, isAlarmSet, time)).start();
             Snackbar.make(v, "Reminder created", Snackbar.LENGTH_SHORT).show();
         } else {
-            Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
-            new Thread(new CreateRunnable("ToDo", reminder, isAlarmSet, time)).start();
+            if(reminder.length()>0) {
+                Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
+                new Thread(new CreateRunnable("ToDo", reminder, isAlarmSet, time)).start();
+            }
         }
     }
 
@@ -220,16 +226,20 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         int isAlarmSet = 0;
         String time = "";
         if(mSwitch.isChecked()){
-            isAlarmSet =1;
-            time = mDate.getText()+" "+mTime.getText();
+            if((!mDate.getText().equals(""))&&(!mTime.getText().equals(""))) {
+                isAlarmSet = 1;
+                time = mDate.getText() + " " + mTime.getText();
+            }
         }
         if (title.length() > 0) {
             new Thread(new UpdateRunnable(note.getId(),title, reminder, note.getImgColor(),isAlarmSet,time)).start();
             Snackbar.make(v,"Reminder updated",Snackbar.LENGTH_SHORT).show();
             Log.d("Note Updated", note.toString());
         } else {
-            Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
-            new Thread(new UpdateRunnable(note.getId(),"ToDo", reminder, note.getImgColor(),isAlarmSet,time)).start();
+            if(reminder.length()>0) {
+                Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
+                new Thread(new UpdateRunnable(note.getId(), "ToDo", reminder, note.getImgColor(), isAlarmSet, time)).start();
+            }
         }
     }
 
@@ -247,7 +257,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         public void run() {
             note = reminderDataSource.createNote(title, reminder, isAlarmSet,time);
             Log.d("Note Inserted", note.toString());
-            if(mSwitch.isChecked()) {
+            if(isAlarmSet==1) {
                 NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
             }
         }
@@ -266,7 +276,12 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         @Override
         public void run() {
             reminderDataSource.updateNote(id,title, reminder, color, isAlarmSet,time);
-            if(mSwitch.isChecked()) {
+            note.setId(id);
+            note.setTitle(title);
+            note.setReminder(reminder);note.setImgColor(color);
+            note.setisAlarmSet(isAlarmSet);
+            note.setTime(time);
+            if(isAlarmSet==1) {
                 NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
             }
         }
