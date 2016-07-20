@@ -90,7 +90,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            >
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -102,18 +103,30 @@
                     android:gravity="center"
                     android:text="Today"/>
                 <View
-                    android:layout_width="150dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="2dp"/>
+                    android:layout_width="130dp"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="3dp"
+                    android:background="@color/grey"/>
             </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\@  "/>
-            <TextView
-                android:id="@+id/timeId"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content" />
+                android:text="\@  "
+                android:textSize="20dp"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/timeId"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:layout_width="130dp"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="3dp"
+                    android:background="@color/grey"/>
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

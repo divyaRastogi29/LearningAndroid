@@ -52,7 +52,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         reminderDataSource = ReminderDataSource.getInstance(getActivity());
         reminderDataSource.open();
         submitButton.setOnClickListener(this);
-        mCalendar = Calendar.getInstance();
+        Log.d("CALENDAR",mCalendar+"");
         if (getArguments() != null) {
             note = (Note) getArguments().getSerializable(AlarmReceiver.NOTE);
             if (note != null) {
@@ -166,9 +166,8 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         linearDateId = (LinearLayout)view.findViewById(R.id.linearDateId);
         coordinateLayout = (LinearLayout)view.findViewById(R.id.coordinatorLayout);
         mDate = (TextView) view.findViewById(R.id.dateId);
-        mDate.setPaintFlags(mDate.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         mTime = (TextView) view.findViewById(R.id.timeId);
-        mTime.setPaintFlags(mTime.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+        mCalendar = Calendar.getInstance();
     }
 
     @Override
