@@ -55,5 +55,6 @@ public class NoteAlarmManager {
         Intent intent = new Intent(NoteApp.context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(NoteApp.context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
+        Log.d(TAG, "Alarm cancelled");
     }
 }

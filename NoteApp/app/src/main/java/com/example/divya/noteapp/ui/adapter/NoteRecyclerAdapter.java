@@ -1,5 +1,6 @@
 package com.example.divya.noteapp.ui.adapter;
 
+import android.app.AlarmManager;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -16,6 +17,7 @@ import com.example.divya.noteapp.model.Note;
 import com.example.divya.noteapp.R;
 import com.example.divya.noteapp.data_manager.ReminderDataSource;
 import com.example.divya.noteapp.ui.fragments.CreateNoteFragment;
+import com.example.divya.noteapp.utils.NoteAlarmManager;
 
 import java.util.List;
 
@@ -43,6 +45,9 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     public void removeNotes(List<Note> notesList) {
         for (Note note : notesList) {
             reminderDataSource.deleteNote(note);
+            if(note.isAlarmSet() == 1) {
+                NoteAlarmManager.getInstance().cancelAlarm((int) note.getId());
+            }
         }
     }
 

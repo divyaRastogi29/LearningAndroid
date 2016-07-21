@@ -15,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -211,22 +210,22 @@ public class CreateNoteFragment extends Fragment implements View.OnClickListener
         note = new Note();
         final String title = editTitle.getText().toString().trim();
         final String reminder = editReminder.getText().toString().trim();
-        int isAlarmSet = 0;
+        int setAlarm = 0;
         String time = "";
         if (mSwitch.isChecked()) {
             if ((!mDate.getText().equals("")) && (!mTime.getText().equals(""))) {
-                isAlarmSet = 1;
+                setAlarm = 1;
                 time = mDate.getText() + " " + mTime.getText();
             }
         }
 
         if (title.length() > 0) {
-            new Thread(new CreateRunnable(title, reminder, isAlarmSet, time)).start();
+            new Thread(new CreateRunnable(title, reminder, setAlarm, time)).start();
             Snackbar.make(v, "Reminder created", Snackbar.LENGTH_SHORT).show();
         } else {
             if (reminder.length() > 0) {
                 Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
-                new Thread(new CreateRunnable("ToDo", reminder, isAlarmSet, time)).start();
+                new Thread(new CreateRunnable("Todo", reminder, setAlarm, time)).start();
             }
         }
     }
@@ -234,22 +233,22 @@ public class CreateNoteFragment extends Fragment implements View.OnClickListener
     public void updateNote(View v) {
         final String title = editTitle.getText().toString();
         final String reminder = editReminder.getText().toString();
-        int isAlarmSet = 0;
+        int setAlarm = 0;
         String time = "";
         if (mSwitch.isChecked()) {
             if ((!mDate.getText().equals("")) && (!mTime.getText().equals(""))) {
-                isAlarmSet = 1;
+                setAlarm = 1;
                 time = mDate.getText() + " " + mTime.getText();
             }
         }
         if (title.length() > 0) {
-            new Thread(new UpdateRunnable(note.getId(), title, reminder, note.getImgColor(), isAlarmSet, time)).start();
+            new Thread(new UpdateRunnable(note.getId(), title, reminder, note.getImgColor(), setAlarm, time)).start();
             Snackbar.make(v, "Reminder updated", Snackbar.LENGTH_SHORT).show();
             Log.d("Note Updated", note.toString());
         } else {
             if (reminder.length() > 0) {
                 Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
-                new Thread(new UpdateRunnable(note.getId(), "ToDo", reminder, note.getImgColor(), isAlarmSet, time)).start();
+                new Thread(new UpdateRunnable(note.getId(), "Todo", reminder, note.getImgColor(), setAlarm, time)).start();
             }
         }
     }
@@ -258,12 +257,12 @@ public class CreateNoteFragment extends Fragment implements View.OnClickListener
 
         String title, reminder, time;
 
-        int    isAlarmSet;
+        int setAlarm;
 
         Note   note;
 
-        CreateRunnable(String title, String reminder, int isAlarmSet, String time) {
-            this.isAlarmSet = isAlarmSet;
+        CreateRunnable(String title, String reminder, int setAlarm, String time) {
+            this.setAlarm = setAlarm;
             this.time = time;
             this.title = title;
             this.reminder = reminder;
@@ -271,9 +270,9 @@ public class CreateNoteFragment extends Fragment implements View.OnClickListener
 
         @Override
         public void run() {
-            note = reminderDataSource.createNote(title, reminder, isAlarmSet, time);
+            note = reminderDataSource.createNote(title, reminder, setAlarm, time);
             Log.d("Note Inserted", note.toString());
-            if (isAlarmSet == 1) {
+            if (setAlarm == 1) {
                 NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
             }
         }
@@ -285,28 +284,30 @@ public class CreateNoteFragment extends Fragment implements View.OnClickListener
 
         String title, reminder, time;
 
-        int    color, isAlarmSet;
+        int    color, setAlarm;
 
         UpdateRunnable(long id, String title, String reminder, int color, int isAlarmSet, String time) {
             this.id = id;
             this.title = title;
             this.reminder = reminder;
             this.color = color;
-            this.isAlarmSet = isAlarmSet;
+            this.setAlarm = isAlarmSet;
             this.time = time;
         }
 
         @Override
         public void run() {
-            reminderDataSource.updateNote(id, title, reminder, color, isAlarmSet, time);
+            reminderDataSource.updateNote(id, title, reminder, color, setAlarm, time);
             note.setId(id);
             note.setTitle(title);
             note.setReminder(reminder);
             note.setImgColor(color);
-            note.setisAlarmSet(isAlarmSet);
+            note.setisAlarmSet(setAlarm);
             note.setTime(time);
-            if (isAlarmSet == 1) {
+            if (setAlarm == 1) {
                 NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
+            } else {
+                NoteAlarmManager.getInstance().cancelAlarm((int)note.getId());
             }
         }
     }
