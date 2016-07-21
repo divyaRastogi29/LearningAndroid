@@ -54,7 +54,6 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         reminderDataSource = ReminderDataSource.getInstance(getActivity());
         reminderDataSource.open();
         submitButton.setOnClickListener(this);
-        Log.d("CALENDAR",mCalendar+"");
         if (getArguments() != null) {
             note = (Note) getArguments().getSerializable(AlarmReceiver.NOTE);
             Object obj = getArguments().get("Notification");
@@ -64,23 +63,28 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
                 editTitle.setText(note.getTitle());
                 editReminder.setText(note.getReminder());
                 if(note.isAlarmSet()==1) {
-                    mSwitch.toggle();
-                    linearDateId.setVisibility(View.VISIBLE);
-                    String time = note.getTime();
-                    mDate.setText(note.getTime().split(" ")[0]);
-                    mTime.setText(note.getTime().split(" ")[1]);
-                    mDate.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showPopUpDate();
-                        }
-                    });
-                    mTime.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showPopUpTime();
-                        }
-                    });
+                    if(backStackNotify){
+                        NoteAlarmManager.getInstance().cancelAlarm((int)note.getId());
+                    }
+                    else {
+                        mSwitch.toggle();
+                        linearDateId.setVisibility(View.VISIBLE);
+                        mDate.setText(note.getTime().split(" ")[0]);
+                        mTime.setText(note.getTime().split(" ")[1]);
+                        mDate.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showPopUpDate();
+                            }
+                        });
+                        mTime.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showPopUpTime();
+                            }
+                        });
+                    }
+
                 }
             }
         }
@@ -122,9 +126,12 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         tp.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                String min = minute+"";
                 mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 mCalendar.set(Calendar.MINUTE, minute);
-                mTime.setText(hourOfDay+":"+minute);
+                if((minute>=0)&&(minute<=9))
+                    min = "0"+min;
+                mTime.setText(hourOfDay+":"+min);
                 popupWindow.dismiss();
             }
 
@@ -210,7 +217,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onDetach() {
-        super.onDetach();
+        Log.d("flagValueOnDetach",flag+"");
         if(flag==0) {
             if ((note == null) || (note.getId() == 0)) {
                 createNote(linearLayout);
@@ -218,6 +225,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
                 updateNote(linearLayout);
             }
         }
+        super.onDetach();
     }
 
     public void createNote(View v) {

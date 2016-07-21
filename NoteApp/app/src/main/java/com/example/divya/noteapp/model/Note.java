@@ -61,6 +61,6 @@ public class Note implements Serializable {
     }
 
     public String toString(){
-        return id+" "+title+" "+reminder;
+        return id+" "+title+" "+reminder+" "+isAlarmSet()+" "+time;
     }
 }
