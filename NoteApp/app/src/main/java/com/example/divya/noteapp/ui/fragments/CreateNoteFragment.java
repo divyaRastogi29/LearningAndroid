@@ -1,23 +1,21 @@
 package com.example.divya.noteapp.ui.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CalendarView;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -33,54 +31,72 @@ import java.util.Calendar;
 /**
  * Created by divya on 5/7/16.
  */
-public class CreateMessageFragment extends Fragment implements View.OnClickListener{
-    private EditText editTitle;
-    private EditText editReminder;
+public class CreateNoteFragment extends Fragment implements View.OnClickListener {
+
+    private EditText             editTitle;
+
+    private EditText             editReminder;
+
     private FloatingActionButton submitButton;
-    private ReminderDataSource reminderDataSource;
-    private LinearLayout linearLayout,linearDateId,coordinateLayout;
-    private Note note;
-    private Switch mSwitch;
-    private TextView mDate, mTime;
-    private Calendar mCalendar;
-    private int flag = 0;
-    private boolean backStackNotify = false;
+
+    private ReminderDataSource   reminderDataSource;
+
+    private LinearLayout         linearLayout;
+
+    private LinearLayout         linearDateId;
+
+    private Note                 note;
+
+    private Switch               mSwitch;
+
+    private TextView             mDate, mTime;
+
+    private Calendar             mCalendar;
+
+    private int                  flag            = 0;
+
+    private boolean              backStackNotify = false;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_layout, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_note, container, false);
         initViews(view);
-        reminderDataSource = ReminderDataSource.getInstance(getActivity());
+
+        reminderDataSource = ReminderDataSource.getInstance();
         reminderDataSource.open();
+
         submitButton.setOnClickListener(this);
+
         if (getArguments() != null) {
+
             note = (Note) getArguments().getSerializable(AlarmReceiver.NOTE);
             Object obj = getArguments().get("Notification");
-            if((obj!=null)&&((boolean)obj))
-                backStackNotify =true;
+            if ((obj != null) && ((boolean) obj))
+                backStackNotify = true;
             if (note != null) {
                 editTitle.setText(note.getTitle());
                 editReminder.setText(note.getReminder());
-                if(note.isAlarmSet()==1) {
-                    if(backStackNotify){
-                        NoteAlarmManager.getInstance().cancelAlarm((int)note.getId());
-                    }
-                    else {
+                if (note.isAlarmSet() == 1) {
+                    if (backStackNotify) {
+                        NoteAlarmManager.getInstance().cancelAlarm((int) note.getId());
+                    } else {
                         mSwitch.toggle();
                         linearDateId.setVisibility(View.VISIBLE);
                         mDate.setText(note.getTime().split(" ")[0]);
                         mTime.setText(note.getTime().split(" ")[1]);
                         mDate.setOnClickListener(new View.OnClickListener() {
+
                             @Override
                             public void onClick(View v) {
-                                showPopUpDate();
+                                showDatePicker();
                             }
                         });
                         mTime.setOnClickListener(new View.OnClickListener() {
+
                             @Override
                             public void onClick(View v) {
-                                showPopUpTime();
+                                showTimePicker();
                             }
                         });
                     }
@@ -89,24 +105,26 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
             }
         }
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     linearDateId.setVisibility(View.VISIBLE);
                     mDate.setOnClickListener(new View.OnClickListener() {
+
                         @Override
                         public void onClick(View v) {
-                            showPopUpDate();
+                            showDatePicker();
                         }
                     });
                     mTime.setOnClickListener(new View.OnClickListener() {
+
                         @Override
                         public void onClick(View v) {
-                            showPopUpTime();
+                            showTimePicker();
                         }
                     });
-                }
-                else{
+                } else {
                     linearDateId.setVisibility(View.GONE);
                 }
 
@@ -114,82 +132,47 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         });
         return view;
     }
-    private void showPopUpTime(){
-        LayoutInflater layoutInflater = (LayoutInflater)getActivity().getApplication()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View layout = layoutInflater.inflate(R.layout.clock,coordinateLayout ,false);
-        final PopupWindow popupWindow = new PopupWindow(getActivity());
-        popupWindow.setContentView(layout);
-        popupWindow.setWidth(900);
-        popupWindow.setHeight(1300);
-        TimePicker tp = (TimePicker)layout.findViewById(R.id.clock);
-        tp.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                String min = minute+"";
-                mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                mCalendar.set(Calendar.MINUTE, minute);
-                if((minute>=0)&&(minute<=9))
-                    min = "0"+min;
-                mTime.setText(hourOfDay+":"+min);
-                popupWindow.dismiss();
-            }
 
-        });
-        coordinateLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                popupWindow.showAtLocation(coordinateLayout, Gravity.CENTER ,0,0);
-            }
-        });
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
-    }
-    private void showPopUpDate(){
-        LayoutInflater layoutInflater = (LayoutInflater)getActivity().getApplication()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View layout = layoutInflater.inflate(R.layout.calendar,coordinateLayout ,false);
-        final PopupWindow popupWindow = new PopupWindow(getActivity());
-        popupWindow.setContentView(layout);
-        CalendarView cv = (CalendarView) layout.findViewById(R.id.calendarId);
-        cv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-
-        cv.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+    private void showDatePicker() {
+        Calendar todayCalendar = Calendar.getInstance();
+        new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
 
             @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month,
-                                            int dayOfMonth) {
-                // TODO Auto-generated method stub
-                mDate.setText(year+"-"+(month+1)+"-"+dayOfMonth);
-                //    mDate.setText(dayOfMonth+" "+(new DateFormatSymbols().getMonths()[month])+","+year);
-                popupWindow.dismiss();
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                mDate.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+                // mDate.setText(dayOfMonth+" "+(new
+                // DateFormatSymbols().getMonths()[month])+","+year);
                 mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 mCalendar.set(Calendar.YEAR, year);
-                mCalendar.set(Calendar.MONTH, month);
-                Log.d("date selected", "date selected " + year + " " + month + " " + dayOfMonth);
-
+                mCalendar.set(Calendar.MONTH, monthOfYear);
+                Log.d("date selected", "date selected " + year + " " + monthOfYear + " " + dayOfMonth);
             }
-        });
-
-        coordinateLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                popupWindow.showAtLocation(coordinateLayout, Gravity.CENTER ,0,0);
-            }
-        });
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
+        }, todayCalendar.get(Calendar.YEAR), todayCalendar.get(Calendar.MONTH), todayCalendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
+    private void showTimePicker() {
+        Calendar todayCalendar = Calendar.getInstance();
+        new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String min = minute + "";
+                mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                mCalendar.set(Calendar.MINUTE, minute);
+                if ((minute >= 0) && (minute <= 9))
+                    min = "0" + min;
+                mTime.setText(hourOfDay + ":" + min);
+            }
+        }, todayCalendar.get(Calendar.HOUR), todayCalendar.get(Calendar.MINUTE), false).show();
+    }
 
     private void initViews(View view) {
-        submitButton = (FloatingActionButton)view.findViewById(R.id.submitButton);
+        submitButton = (FloatingActionButton) view.findViewById(R.id.submitButton);
         editTitle = (EditText) view.findViewById(R.id.titleNote);
-        editReminder = (EditText)view.findViewById(R.id.reminderNote);
-        linearLayout = (LinearLayout)getActivity().findViewById(R.id.linearLayout);
-        mSwitch = (Switch)view.findViewById(R.id.switchId);
-        linearDateId = (LinearLayout)view.findViewById(R.id.linearDateId);
-        coordinateLayout = (LinearLayout)view.findViewById(R.id.coordinatorLayout);
+        editReminder = (EditText) view.findViewById(R.id.reminderNote);
+        linearLayout = (LinearLayout) getActivity().findViewById(R.id.linearLayout);
+        mSwitch = (Switch) view.findViewById(R.id.switchId);
+        linearDateId = (LinearLayout) view.findViewById(R.id.linearDateId);
         mDate = (TextView) view.findViewById(R.id.dateId);
         mTime = (TextView) view.findViewById(R.id.timeId);
         mCalendar = Calendar.getInstance();
@@ -197,28 +180,24 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if((note == null)||(note.getId()==0)) {
+        if ((note == null) || (note.getId() == 0)) {
             createNote(linearLayout);
-        }
-        else{
+        } else {
             updateNote(linearLayout);
         }
-        flag=1;
-        if(backStackNotify){
-            MessageListFragment fragmentList = new MessageListFragment();
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragmentList)
-                    .commit();
-        }
-        else {
+        flag = 1;
+        if (backStackNotify) {
+            NoteListFragment fragmentList = new NoteListFragment();
+            getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragmentList).commit();
+        } else {
             getFragmentManager().popBackStackImmediate();
         }
     }
 
     @Override
     public void onDetach() {
-        Log.d("flagValueOnDetach",flag+"");
-        if(flag==0) {
+        Log.d("flagValueOnDetach", flag + "");
+        if (flag == 0) {
             if ((note == null) || (note.getId() == 0)) {
                 createNote(linearLayout);
             } else {
@@ -235,7 +214,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         int isAlarmSet = 0;
         String time = "";
         if (mSwitch.isChecked()) {
-            if((!mDate.getText().equals(""))&&(!mTime.getText().equals(""))) {
+            if ((!mDate.getText().equals("")) && (!mTime.getText().equals(""))) {
                 isAlarmSet = 1;
                 time = mDate.getText() + " " + mTime.getText();
             }
@@ -245,30 +224,30 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
             new Thread(new CreateRunnable(title, reminder, isAlarmSet, time)).start();
             Snackbar.make(v, "Reminder created", Snackbar.LENGTH_SHORT).show();
         } else {
-            if(reminder.length()>0) {
+            if (reminder.length() > 0) {
                 Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
                 new Thread(new CreateRunnable("ToDo", reminder, isAlarmSet, time)).start();
             }
         }
     }
 
-    public void updateNote(View v){
+    public void updateNote(View v) {
         final String title = editTitle.getText().toString();
         final String reminder = editReminder.getText().toString();
         int isAlarmSet = 0;
         String time = "";
-        if(mSwitch.isChecked()){
-            if((!mDate.getText().equals(""))&&(!mTime.getText().equals(""))) {
+        if (mSwitch.isChecked()) {
+            if ((!mDate.getText().equals("")) && (!mTime.getText().equals(""))) {
                 isAlarmSet = 1;
                 time = mDate.getText() + " " + mTime.getText();
             }
         }
         if (title.length() > 0) {
-            new Thread(new UpdateRunnable(note.getId(),title, reminder, note.getImgColor(),isAlarmSet,time)).start();
-            Snackbar.make(v,"Reminder updated",Snackbar.LENGTH_SHORT).show();
+            new Thread(new UpdateRunnable(note.getId(), title, reminder, note.getImgColor(), isAlarmSet, time)).start();
+            Snackbar.make(v, "Reminder updated", Snackbar.LENGTH_SHORT).show();
             Log.d("Note Updated", note.toString());
         } else {
-            if(reminder.length()>0) {
+            if (reminder.length() > 0) {
                 Snackbar.make(v, "Note created with title - ToDo", Snackbar.LENGTH_SHORT).show();
                 new Thread(new UpdateRunnable(note.getId(), "ToDo", reminder, note.getImgColor(), isAlarmSet, time)).start();
             }
@@ -276,28 +255,39 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
     }
 
     class CreateRunnable implements Runnable {
+
         String title, reminder, time;
-        int isAlarmSet;
-        Note note;
-        CreateRunnable(String title, String reminder, int isAlarmSet, String time){
+
+        int    isAlarmSet;
+
+        Note   note;
+
+        CreateRunnable(String title, String reminder, int isAlarmSet, String time) {
             this.isAlarmSet = isAlarmSet;
             this.time = time;
-            this.title = title ;
+            this.title = title;
             this.reminder = reminder;
         }
+
         @Override
         public void run() {
-            note = reminderDataSource.createNote(title, reminder, isAlarmSet,time);
+            note = reminderDataSource.createNote(title, reminder, isAlarmSet, time);
             Log.d("Note Inserted", note.toString());
-            if(isAlarmSet==1) {
+            if (isAlarmSet == 1) {
                 NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
             }
         }
     }
 
     class UpdateRunnable implements Runnable {
-        long  id ;String title, reminder,time ; int color, isAlarmSet;
-        UpdateRunnable(long  id , String title, String reminder, int color,int isAlarmSet,String time){
+
+        long id;
+
+        String title, reminder, time;
+
+        int    color, isAlarmSet;
+
+        UpdateRunnable(long id, String title, String reminder, int color, int isAlarmSet, String time) {
             this.id = id;
             this.title = title;
             this.reminder = reminder;
@@ -305,15 +295,17 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
             this.isAlarmSet = isAlarmSet;
             this.time = time;
         }
+
         @Override
         public void run() {
-            reminderDataSource.updateNote(id,title, reminder, color, isAlarmSet,time);
+            reminderDataSource.updateNote(id, title, reminder, color, isAlarmSet, time);
             note.setId(id);
             note.setTitle(title);
-            note.setReminder(reminder);note.setImgColor(color);
+            note.setReminder(reminder);
+            note.setImgColor(color);
             note.setisAlarmSet(isAlarmSet);
             note.setTime(time);
-            if(isAlarmSet==1) {
+            if (isAlarmSet == 1) {
                 NoteAlarmManager.getInstance().setAlarm(mCalendar, note);
             }
         }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.divya.noteapp.NoteApp;
 import com.example.divya.noteapp.model.Note;
@@ -17,6 +18,8 @@ import java.util.Calendar;
  * Created by divya on 16/7/16.
  */
 public class NoteAlarmManager {
+
+    private static final String TAG = NoteAlarmManager.class.getSimpleName();
 
     private static final NoteAlarmManager sInstance = new NoteAlarmManager();
 
@@ -42,6 +45,9 @@ public class NoteAlarmManager {
         } else {
             alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         }
+
+        Log.d(TAG, "Alarm set");
+
     }
 
     public void cancelAlarm(int id) {

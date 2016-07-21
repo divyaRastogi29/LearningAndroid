@@ -15,37 +15,44 @@ import android.widget.TextView;
 import com.example.divya.noteapp.model.Note;
 import com.example.divya.noteapp.R;
 import com.example.divya.noteapp.data_manager.ReminderDataSource;
-import com.example.divya.noteapp.ui.fragments.CreateMessageFragment;
+import com.example.divya.noteapp.ui.fragments.CreateNoteFragment;
 
 import java.util.List;
 
 /**
  * Created by divya on 5/7/16.
  */
-public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapter.MyViewHolder>{
-    private  List<Note> notesList;
-    private ReminderDataSource reminderDataSource;
-    private FragmentManager fragmentManager;
+public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapter.MyViewHolder> {
 
-    public NoteRecyclerAdapter(List<Note> notesList, ReminderDataSource reminderDataSource, FragmentManager fragmentManager){
+    private List<Note>         notesList;
+
+    private ReminderDataSource reminderDataSource;
+
+    private FragmentManager    fragmentManager;
+
+    public NoteRecyclerAdapter(List<Note> notesList, ReminderDataSource reminderDataSource, FragmentManager fragmentManager) {
         this.notesList = notesList;
-        this.reminderDataSource = reminderDataSource ;
+        this.reminderDataSource = reminderDataSource;
         this.fragmentManager = fragmentManager;
     }
-    public void newData(List<Note> notesList){
+
+    public void newData(List<Note> notesList) {
         this.notesList = notesList;
     }
-    public void removeNotes(List<Note> notesList){
-        for(Note note : notesList) {
+
+    public void removeNotes(List<Note> notesList) {
+        for (Note note : notesList) {
             reminderDataSource.deleteNote(note);
         }
     }
-    public Note getNoteAtPosition(int pos){
+
+    public Note getNoteAtPosition(int pos) {
         return notesList.get(pos);
     }
+
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false);
         return new MyViewHolder(view);
     }
 
@@ -53,17 +60,17 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         final Note note = notesList.get(position);
         String newTitleSubString;
-        int initial=0;
-        if(note.getTitle().length()>0) {
-             initial = note.getTitle().charAt(0);
+        int initial = 0;
+        if (note.getTitle().length() > 0) {
+            initial = note.getTitle().charAt(0);
             if ((initial >= 97) && (initial <= 122))
                 initial = initial - 32;
             holder.imgCircle.setText((char) initial + "");
         }
-        if(note.getTitle().length()>1)
-            newTitleSubString = (char)initial+note.getTitle().substring(1);
+        if (note.getTitle().length() > 1)
+            newTitleSubString = (char) initial + note.getTitle().substring(1);
         else
-            newTitleSubString = (char)initial+"";
+            newTitleSubString = (char) initial + "";
         holder.titleText.setText(newTitleSubString);
 
         Drawable background = holder.imgCircle.getBackground();
@@ -74,21 +81,19 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
         } else if (background instanceof GradientDrawable) {
             ((GradientDrawable) background).setColor(note.getImgColor());
 
-
         } else if (background instanceof ColorDrawable) {
             ((ColorDrawable) background).setColor(note.getImgColor());
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                CreateMessageFragment fragment = new CreateMessageFragment();
+                CreateNoteFragment fragment = new CreateNoteFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("note",note);
+                bundle.putSerializable("note", note);
                 fragment.setArguments(bundle);
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment).addToBackStack(null)
-                        .commit();
+                fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
             }
         });
     }
@@ -97,14 +102,17 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     public int getItemCount() {
         return notesList.size();
     }
-    public class MyViewHolder extends RecyclerView.ViewHolder{
-        public TextView  titleText;
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView titleText;
+
         public TextView imgCircle;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            titleText = (TextView)itemView.findViewById(R.id.titleText);
-            imgCircle = (TextView)itemView.findViewById(R.id.imgCircle);
+            titleText = (TextView) itemView.findViewById(R.id.titleText);
+            imgCircle = (TextView) itemView.findViewById(R.id.imgCircle);
         }
 
     }

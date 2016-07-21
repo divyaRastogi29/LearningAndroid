@@ -1,5 +1,6 @@
 package com.example.divya.noteapp.receiver;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -31,7 +32,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             builder.setContentTitle(note.getTitle());
             builder.setSmallIcon(R.mipmap.ic_launcher);
             builder.setAutoCancel(true);
-            builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+            builder.setDefaults(Notification.DEFAULT_ALL);
 
             Intent activityIntent = new Intent(context, MainActivity.class);
             Bundle bundle = new Bundle();
