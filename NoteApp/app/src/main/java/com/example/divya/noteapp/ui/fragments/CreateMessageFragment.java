@@ -44,6 +44,7 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
     private TextView mDate, mTime;
     private Calendar mCalendar;
     private int flag = 0;
+    private boolean backStackNotify = false;
 
     @Nullable
     @Override
@@ -56,6 +57,9 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
         Log.d("CALENDAR",mCalendar+"");
         if (getArguments() != null) {
             note = (Note) getArguments().getSerializable(AlarmReceiver.NOTE);
+            Object obj = getArguments().get("Notification");
+            if((obj!=null)&&((boolean)obj))
+                backStackNotify =true;
             if (note != null) {
                 editTitle.setText(note.getTitle());
                 editReminder.setText(note.getReminder());
@@ -193,7 +197,15 @@ public class CreateMessageFragment extends Fragment implements View.OnClickListe
             updateNote(linearLayout);
         }
         flag=1;
-        getFragmentManager().popBackStackImmediate();
+        if(backStackNotify){
+            MessageListFragment fragmentList = new MessageListFragment();
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragmentList)
+                    .commit();
+        }
+        else {
+            getFragmentManager().popBackStackImmediate();
+        }
     }
 
     @Override

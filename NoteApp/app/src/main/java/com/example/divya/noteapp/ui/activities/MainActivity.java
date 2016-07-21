@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity{
             note= (Note)getIntent().getExtras().getSerializable(AlarmReceiver.NOTE);
             CreateMessageFragment fragment = new CreateMessageFragment();
             Bundle bundle = new Bundle();
+            bundle.putBoolean("Notification",true);
             bundle.putSerializable(AlarmReceiver.NOTE,note);
             fragment.setArguments(bundle);
             fragmentManager.beginTransaction().
