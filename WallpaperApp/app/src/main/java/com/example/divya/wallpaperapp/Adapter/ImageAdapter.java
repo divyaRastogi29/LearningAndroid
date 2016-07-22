@@ -1,5 +1,6 @@
 package com.example.divya.wallpaperapp.Adapter;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,8 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.example.divya.wallpaperapp.Fragments.CompleteImageFragment;
 import com.example.divya.wallpaperapp.R;
 import com.example.divya.wallpaperapp.VolleyLibrary.RequestQueueServer;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Map;
@@ -24,11 +27,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
     private List<String> urls;
     private List<String> largeUrls;
     private FragmentManager fragmentManager;
+    private Context context;
 
-    public ImageAdapter(List<String> urls, List<String> largeUrls, FragmentManager fragmentManager){
+    public ImageAdapter(List<String> urls, List<String> largeUrls, FragmentManager fragmentManager, Context context){
         this.urls = urls ;
         this.largeUrls = largeUrls;
         this.fragmentManager = fragmentManager;
+        this.context = context;
     }
 
     @Override
@@ -44,6 +49,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         ImageLoader mImageLoader = RequestQueueServer.getInstance().getmImageLoader();
         holder.image.setImageUrl(url, mImageLoader);
         holder.progressBar.setVisibility(View.GONE);
+       /* Picasso.with(context)
+                .load(urls.get(position)).resize(100,100)
+                .into(holder.image, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        holder.progressBar.setVisibility(View.GONE);
+                    }
+                    @Override
+                    public void onError() {
+                        //show error
+                    }
+                });*/
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

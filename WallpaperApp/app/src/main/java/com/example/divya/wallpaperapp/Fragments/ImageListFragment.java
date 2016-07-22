@@ -61,7 +61,7 @@ public class ImageListFragment extends Fragment {
     }
 
     private void bindViews() {
-        adapter = new ImageAdapter(urls, largeUrls, getFragmentManager());
+        adapter = new ImageAdapter(urls, largeUrls, getFragmentManager(), getActivity());
         gridLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
     }
@@ -113,7 +113,7 @@ public class ImageListFragment extends Fragment {
                     JSONObject photo = (JSONObject) array.get(i);
                     JSONObject src = (JSONObject) photo.get("src");
                     String mediumImgUrl = src.getString("medium");
-                    String largeImgUrl = src.getString("large");
+                    String largeImgUrl = src.getString("portrait");
                     mediumImgUrl.replace("\\", "");
                     largeImgUrl.replace("\\", "");
                     urls.add(mediumImgUrl);

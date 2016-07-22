@@ -11,7 +11,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +28,8 @@ import com.example.divya.wallpaperapp.WallpaperApp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 
 /**
  * Created by divya on 22/7/16.
@@ -31,48 +37,62 @@ import java.io.ByteArrayOutputStream;
 public class CompleteImageFragment extends Fragment {
     public static final String URL="url";
     NetworkImageView imageView;
-    ImageView menuImage;
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu, menu);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.complete_image_fragment, container, false);
+        setHasOptionsMenu(true);
         final String url = getArguments().getString(URL);
         initViews(view);
         final ImageLoader mImageLoader = RequestQueueServer.getInstance().getmImageLoader();
         imageView.setImageUrl(url,mImageLoader);
-        menuImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(WallpaperApp.context);
-                Drawable drawable = imageView.getDrawable();
-                BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
-                Bitmap bitmap = bitmapDrawable .getBitmap();
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] imageInByte = stream.toByteArray();
-                ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
-                try {
-                    wallpaperManager.setStream(bis);
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
         return view;
+    }
+
+    private InputStream getInputStreamImage(Drawable drawable){
+        BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] imageInByte = stream.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
+        return bis;
     }
 
     private void initViews(View view) {
         imageView = (NetworkImageView) view.findViewById(R.id.fullImageId);
-        menuImage = (ImageView)getActivity().findViewById(R.id.menuImage);
-        menuImage.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        menuImage.setVisibility(View.GONE);
         getFragmentManager().popBackStackImmediate();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.saveId :
+                return true;
+            case R.id.wallpaperId :
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(WallpaperApp.context);
+                Drawable drawable = imageView.getDrawable();
+                try {
+                    wallpaperManager.setStream(getInputStreamImage(drawable));
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
