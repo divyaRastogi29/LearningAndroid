@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +29,10 @@ import com.example.divya.wallpaperapp.WallpaperApp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
@@ -80,6 +85,34 @@ public class CompleteImageFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.saveId :
+                String path = WallpaperApp.context.getExternalCacheDir() + File.separator +
+                        getResources().getString(R.string.app_name);
+                Log.d("File Saved To Path",path);
+                File f = new File(path);
+                if (!f.exists()){
+                    f.mkdirs();
+                }
+                File file = new File(f, "ImageName"+(++WallpaperApp.i)+".png");
+                if (!file.exists())
+                {
+                    try {
+                        file.createNewFile();
+                        FileOutputStream fileOutput = new FileOutputStream(file);
+                        Drawable drawable = imageView.getDrawable();
+                        InputStream inputStream = getInputStreamImage(drawable);
+                        byte[] buffer = new byte[1024];
+                        int bufferLength = 0;
+                        while ((bufferLength = inputStream.read(buffer)) > 0)
+                        {
+                            fileOutput.write(buffer, 0, bufferLength);
+                        }
+                        fileOutput.close();
+                    }
+                    catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+                }
                 return true;
             case R.id.wallpaperId :
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(WallpaperApp.context);

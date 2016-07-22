@@ -7,6 +7,7 @@ import android.content.Context;
  * Created by divya on 21/7/16.
  */
 public class WallpaperApp extends Application {
+    public static int i=0;
     public static Context context;
 
     @Override
