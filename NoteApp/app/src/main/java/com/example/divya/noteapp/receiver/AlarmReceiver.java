@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
+import com.example.divya.noteapp.data_manager.ReminderDataSource;
 import com.example.divya.noteapp.model.Note;
 import com.example.divya.noteapp.R;
 import com.example.divya.noteapp.ui.activities.MainActivity;
@@ -44,6 +45,19 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify((int)note.getId(), builder.build());
+            new Thread(new UpdateRunnable(note)).start();
+        }
+    }
+
+    class UpdateRunnable implements Runnable{
+        private Note note;
+        UpdateRunnable(Note note){
+            this.note = note ;
+        }
+        @Override
+        public void run() {
+            ReminderDataSource.getInstance().updateNote(note.getId(),note.getTitle(),
+                    note.getReminder(),note.getImgColor(),0,"");
         }
     }
 }

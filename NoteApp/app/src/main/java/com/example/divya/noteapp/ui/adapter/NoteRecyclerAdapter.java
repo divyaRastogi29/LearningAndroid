@@ -32,7 +32,8 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
 
     private FragmentManager    fragmentManager;
 
-    public NoteRecyclerAdapter(List<Note> notesList, ReminderDataSource reminderDataSource, FragmentManager fragmentManager) {
+    public NoteRecyclerAdapter(List<Note> notesList, ReminderDataSource reminderDataSource,
+                               FragmentManager fragmentManager) {
         this.notesList = notesList;
         this.reminderDataSource = reminderDataSource;
         this.fragmentManager = fragmentManager;

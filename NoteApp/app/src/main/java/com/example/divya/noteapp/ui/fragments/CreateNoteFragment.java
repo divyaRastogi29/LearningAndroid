@@ -84,6 +84,11 @@ public class CreateNoteFragment extends Fragment implements View.OnClickListener
                         linearDateId.setVisibility(View.VISIBLE);
                         mDate.setText(note.getTime().split(" ")[0]);
                         mTime.setText(note.getTime().split(" ")[1]);
+                        mCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(mDate.getText().toString().split("-")[2]));
+                        mCalendar.set(Calendar.YEAR, Integer.parseInt(mDate.getText().toString().split("-")[0]));
+                        mCalendar.set(Calendar.MONTH, Integer.parseInt(mDate.getText().toString().split("-")[1]));
+                        mCalendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(mTime.getText().toString().split(":")[0]));
+                        mCalendar.set(Calendar.MINUTE, Integer.parseInt(mTime.getText().toString().split(":")[1]));
                         mDate.setOnClickListener(new View.OnClickListener() {
 
                             @Override
@@ -109,6 +114,7 @@ public class CreateNoteFragment extends Fragment implements View.OnClickListener
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     linearDateId.setVisibility(View.VISIBLE);
+                    mDate.setText(mCalendar.get(Calendar.YEAR)+"-"+(mCalendar.get(Calendar.MONTH)+1)+"-"+mCalendar.get(Calendar.DAY_OF_MONTH));
                     mDate.setOnClickListener(new View.OnClickListener() {
 
                         @Override

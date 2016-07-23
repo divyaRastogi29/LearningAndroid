@@ -27,7 +27,8 @@ public class ReminderDataSource {
 
     private DbHelper       dbHelper;
 
-    private String[]       allColumns = { DbHelper.IMAGE_COLOR, DbHelper.COLUMN_ID, DbHelper.COLUMN_TITLE, DbHelper.COLUMN_REMINDER, DbHelper.isAlarmSet, DbHelper.TIME };
+    private String[]       allColumns = { DbHelper.IMAGE_COLOR, DbHelper.COLUMN_ID, DbHelper.COLUMN_TITLE,
+            DbHelper.COLUMN_REMINDER, DbHelper.isAlarmSet, DbHelper.TIME };
 
     public static ReminderDataSource getInstance() {
         return INSTANCE;
