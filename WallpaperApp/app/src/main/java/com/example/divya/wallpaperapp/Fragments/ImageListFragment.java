@@ -113,7 +113,7 @@ public class ImageListFragment extends Fragment {
                     JSONObject photo = (JSONObject) array.get(i);
                     JSONObject src = (JSONObject) photo.get("src");
                     String mediumImgUrl = src.getString("medium");
-                    String largeImgUrl = src.getString("portrait");
+                    String largeImgUrl = src.getString("original");
                     mediumImgUrl.replace("\\", "");
                     largeImgUrl.replace("\\", "");
                     urls.add(mediumImgUrl);

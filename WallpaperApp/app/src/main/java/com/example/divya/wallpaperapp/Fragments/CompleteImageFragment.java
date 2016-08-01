@@ -1,14 +1,19 @@
 package com.example.divya.wallpaperapp.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.app.WallpaperManager;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -18,11 +23,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.example.divya.wallpaperapp.ImageDownloadPool.Callback;
+import com.example.divya.wallpaperapp.ImageDownloadPool.ImageDownloadManager;
+import com.example.divya.wallpaperapp.NotificationService.NotifyManager;
 import com.example.divya.wallpaperapp.R;
 import com.example.divya.wallpaperapp.VolleyLibrary.RequestQueueServer;
 import com.example.divya.wallpaperapp.WallpaperApp;
@@ -30,18 +36,19 @@ import com.example.divya.wallpaperapp.WallpaperApp;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 
 /**
  * Created by divya on 22/7/16.
  */
 public class CompleteImageFragment extends Fragment {
-    public static final String URL="url";
+    public static final String URL = "url";
+    public static final String HIGH_URL = "highQualityURL";
+    String highQualityUrl;
     NetworkImageView imageView;
+    private final Uri[] fileUri = new Uri[1];
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -52,23 +59,15 @@ public class CompleteImageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.complete_image_fragment, container, false);
         setHasOptionsMenu(true);
         final String url = getArguments().getString(URL);
+        highQualityUrl = getArguments().getString(HIGH_URL);
         initViews(view);
-        final ImageLoader mImageLoader = RequestQueueServer.getInstance().getmImageLoader();
-        imageView.setImageUrl(url,mImageLoader);
+        ImageLoader imageLoader = RequestQueueServer.getInstance().getmImageLoader();
+        imageView.setImageUrl(url,imageLoader);
         return view;
-    }
-
-    private InputStream getInputStreamImage(Drawable drawable){
-        BitmapDrawable bitmapDrawable = ((BitmapDrawable) drawable);
-        Bitmap bitmap = bitmapDrawable.getBitmap();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] imageInByte = stream.toByteArray();
-        ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
-        return bis;
     }
 
     private void initViews(View view) {
@@ -84,48 +83,56 @@ public class CompleteImageFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.saveId :
-                String path = WallpaperApp.context.getExternalCacheDir() + File.separator +
-                        getResources().getString(R.string.app_name);
-                Log.d("File Saved To Path",path);
-                File f = new File(path);
-                if (!f.exists()){
-                    f.mkdirs();
-                }
-                File file = new File(f, "ImageName"+(++WallpaperApp.i)+".png");
-                if (!file.exists())
-                {
-                    try {
-                        file.createNewFile();
-                        FileOutputStream fileOutput = new FileOutputStream(file);
-                        Drawable drawable = imageView.getDrawable();
-                        InputStream inputStream = getInputStreamImage(drawable);
-                        byte[] buffer = new byte[1024];
-                        int bufferLength = 0;
-                        while ((bufferLength = inputStream.read(buffer)) > 0)
-                        {
-                            fileOutput.write(buffer, 0, bufferLength);
-                        }
-                        fileOutput.close();
-                    }
-                    catch (IOException e){
-                        e.printStackTrace();
-                    }
-
-                }
+            case R.id.saveId:
+                Log.d("Save","Save Clicked");
+                fileUri[0] = saveToGallery();
                 return true;
-            case R.id.wallpaperId :
+
+            case R.id.wallpaperId:
+                if(fileUri[0]==null)
+                    fileUri[0] = saveToGallery();
+                Log.d("Method","Came to onSuccess");
+                InputStream in=null;
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(WallpaperApp.context);
-                Drawable drawable = imageView.getDrawable();
                 try {
-                    wallpaperManager.setStream(getInputStreamImage(drawable));
+                    in = WallpaperApp.context.getContentResolver().openInputStream(fileUri[0]);
+                    wallpaperManager.setStream(in);
                 }
-                catch (Exception e){
+                catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public Uri saveToGallery(){
+        int id = WallpaperApp.sharedPreferences.getInt(WallpaperApp.context.getResources().
+                getString(R.string.image_id), 0);
+        WallpaperApp.updateId(++id);
+        NotifyManager.getInstance().setNotification(id);
+        final int finalId = id;
+        ImageDownloadManager.getInstance(WallpaperApp.context).downloadAsync(id, highQualityUrl, new Callback() {
+            @Override
+            public void onSuccess(Uri uri) {
+                fileUri[0] = uri;
+                NotifyManager.getInstance().updateNotification(finalId, "Downloaded Image "+finalId);
+                NotifyManager.getInstance().cancelNotification(finalId);
+            }
+            @Override
+            public void onError() {
+                Log.d("ERROR","Came to onError");
+                NotifyManager.getInstance().updateNotification(finalId, "Network Error");
+                NotifyManager.getInstance().cancelNotification(finalId);
+            }
+        });
+        return fileUri[0];
+    }
+
+
 }

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SharedPrefApp</string>
+    <string name="number">Number</string>
+</resources>

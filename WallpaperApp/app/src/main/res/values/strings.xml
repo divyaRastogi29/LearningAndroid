@@ -3,4 +3,6 @@
     <string name="FirstPageUrl">http://api.pexels.com/v1/search?query=people</string>
     <string name="Authorization">Authorization</string>
     <string name="password">563492ad6f91700001000001d73171e95ed742c3582b9f773d830297</string>
+    <string name="key_file">Key_File</string>
+    <string name="image_id">image_id</string>
 </resources>

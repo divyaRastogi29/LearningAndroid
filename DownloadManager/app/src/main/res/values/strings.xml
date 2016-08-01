@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DownloadManager</string>
+    <string name="key_file">Key_File</string>
+    <string name="image_id">image_id</string>
+</resources>

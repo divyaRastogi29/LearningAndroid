@@ -68,6 +68,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 CompleteImageFragment fragment = new CompleteImageFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString(CompleteImageFragment.URL,url);
+                bundle.putString(CompleteImageFragment.HIGH_URL, largeUrls.get(position));
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction().add(R.id.fragment_container,
                         fragment).addToBackStack(null).commit();
