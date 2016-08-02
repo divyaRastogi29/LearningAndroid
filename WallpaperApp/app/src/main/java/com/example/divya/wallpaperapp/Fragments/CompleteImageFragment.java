@@ -85,17 +85,17 @@ public class CompleteImageFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        boolean setWallpaper = false;
         switch (item.getItemId()) {
             case R.id.saveId:
                 Log.d("Save","Save Clicked");
-                fileUri[0] = saveToGallery();
+                saveToGallery(setWallpaper);
                 return true;
 
             case R.id.wallpaperId:
-                if(fileUri[0]==null)
-                    fileUri[0] = saveToGallery();
+                setWallpaper = true;
+                saveToGallery(setWallpaper);
                 Log.d("Method","Came to onSuccess");
-                new Thread(new SetWallPaper()).start();
                 return true;
 
             default:
@@ -103,26 +103,35 @@ public class CompleteImageFragment extends Fragment {
         }
     }
 
-    public Uri saveToGallery(){
+    public Uri saveToGallery(final boolean setWallpaper){
         int id = WallpaperApp.sharedPreferences.getInt(WallpaperApp.context.getResources().
                 getString(R.string.image_id), 0);
         WallpaperApp.updateId(++id);
         NotifyManager.getInstance().setNotification(id);
         final int finalId = id;
-        ImageDownloadManager.getInstance(WallpaperApp.context).downloadAsync(id, highQualityUrl, new Callback() {
-            @Override
-            public void onSuccess(Uri uri) {
-                fileUri[0] = uri;
-                NotifyManager.getInstance().updateNotification(finalId, "Downloaded Image "+finalId);
-                NotifyManager.getInstance().cancelNotification(finalId);
-            }
-            @Override
-            public void onError() {
-                Log.d("ERROR","Came to onError");
-                NotifyManager.getInstance().updateNotification(finalId, "Network Error");
-                NotifyManager.getInstance().cancelNotification(finalId);
-            }
-        });
+        if(fileUri[0]==null) {
+            ImageDownloadManager.getInstance(WallpaperApp.context).downloadAsync(id, highQualityUrl, new Callback() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    fileUri[0] = uri;
+                    NotifyManager.getInstance().updateNotification(finalId, "Downloaded Image " + finalId);
+                    NotifyManager.getInstance().cancelNotification(finalId);
+                    if(setWallpaper)
+                        new Thread(new SetWallPaper()).start();
+                }
+
+                @Override
+                public void onError() {
+                    Log.d("ERROR", "Came to onError");
+                    NotifyManager.getInstance().updateNotification(finalId, "Network Error");
+                    NotifyManager.getInstance().cancelNotification(finalId);
+                }
+            });
+        }
+        else if(setWallpaper){
+            new Thread(new SetWallPaper()).start();
+        }
+
         return fileUri[0];
     }
 
@@ -146,8 +155,6 @@ public class CompleteImageFragment extends Fragment {
             Log.d("Height",height+"");
             Log.d("Width",width+"");
             WallpaperManager wallpaperManager = WallpaperManager.getInstance(WallpaperApp.context);
-            wallpaperManager.setWallpaperOffsetSteps(1, 1);
-            wallpaperManager.suggestDesiredDimensions(width, height);
             try {
                 in = WallpaperApp.context.getContentResolver().openInputStream(fileUri[0]);
                 BufferedInputStream bis = new BufferedInputStream(in);
