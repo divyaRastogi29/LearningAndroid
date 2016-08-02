@@ -6,6 +6,7 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ import com.example.divya.wallpaperapp.R;
 import com.example.divya.wallpaperapp.VolleyLibrary.RequestQueueServer;
 import com.example.divya.wallpaperapp.WallpaperApp;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -92,18 +95,7 @@ public class CompleteImageFragment extends Fragment {
                 if(fileUri[0]==null)
                     fileUri[0] = saveToGallery();
                 Log.d("Method","Came to onSuccess");
-                InputStream in=null;
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(WallpaperApp.context);
-                try {
-                    in = WallpaperApp.context.getContentResolver().openInputStream(fileUri[0]);
-                    wallpaperManager.setStream(in);
-                }
-                catch (FileNotFoundException e){
-                    e.printStackTrace();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+                new Thread(new SetWallPaper()).start();
                 return true;
 
             default:
@@ -132,6 +124,44 @@ public class CompleteImageFragment extends Fragment {
             }
         });
         return fileUri[0];
+    }
+
+    public static Bitmap scaleBitmap(Bitmap bitmap, int newWidth, int newHeight) {
+        float scaleX = ((float)newWidth) /  bitmap.getWidth();
+        float scaleY = ((float)newHeight) / bitmap.getHeight();
+        Matrix scaleMatrix = new Matrix();
+        scaleMatrix.postScale(scaleX, scaleY);
+        Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight() , scaleMatrix, true);
+        return scaledBitmap;
+    }
+
+    class SetWallPaper implements Runnable{
+        @Override
+        public void run() {
+            InputStream in=null;
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int height = metrics.heightPixels;
+            int width = metrics.widthPixels;
+            Log.d("Height",height+"");
+            Log.d("Width",width+"");
+            WallpaperManager wallpaperManager = WallpaperManager.getInstance(WallpaperApp.context);
+            wallpaperManager.setWallpaperOffsetSteps(1, 1);
+            wallpaperManager.suggestDesiredDimensions(width, height);
+            try {
+                in = WallpaperApp.context.getContentResolver().openInputStream(fileUri[0]);
+                BufferedInputStream bis = new BufferedInputStream(in);
+                Bitmap bitmap = BitmapFactory.decodeStream(bis);
+                bitmap = scaleBitmap(bitmap, width, height);
+                wallpaperManager.setBitmap(bitmap);
+            }
+            catch (FileNotFoundException e){
+                e.printStackTrace();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
