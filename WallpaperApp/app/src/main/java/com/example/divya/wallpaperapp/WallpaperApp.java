@@ -23,7 +23,7 @@ public class WallpaperApp extends Application {
 
     public static void updateId(int id){
         editor = sharedPreferences.edit();
-        editor.putInt(context.getString(R.string.image_id),0);
+        editor.putInt(context.getString(R.string.image_id),id);
         editor.commit();
     }
 }
